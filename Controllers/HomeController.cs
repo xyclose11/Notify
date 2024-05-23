@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using NoteApp.Helpers;
 using NoteApp.Models;
 
 namespace NoteApp.Controllers;
@@ -15,6 +16,7 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+
         return View();
     }
 

@@ -1,11 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace NoteApp.Models;
 
 public class Note
 {
     
-    private Guid _id = Guid.NewGuid();
-    private string _title = null!;
-    private string _body = null!;
+    public Guid Id { get; set; } = Guid.NewGuid();
+    [MaxLength(128)]
+    public string Title { get; set; } = null!;
+    public string Body = null!;
 
     private enum NoteCategory
     {
@@ -16,8 +19,4 @@ public class Note
     };
     private DateTime _createdAt;
     private DateTime _updatedAt;
-
-    
-
-    
 }

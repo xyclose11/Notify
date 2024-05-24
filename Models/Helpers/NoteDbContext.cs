@@ -17,8 +17,8 @@ public class NoteDbContext : DbContext
         options.UseNpgsql(Configuration.GetConnectionString("NoteDbContext"));
     }
     
-    public DbSet<User> User { get; set; }
-    public DbSet<Note> Note { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<Note> Notes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

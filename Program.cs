@@ -1,5 +1,8 @@
 using NoteApp.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using NoteApp.Models.Helpers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -31,6 +34,7 @@ using (var scope = app.Services.CreateScope())
 
     var context = services.GetRequiredService<NoteDbContext>();
     context.Database.EnsureCreated();
+    DbInit.Initialize(context);
 }
 
 app.UseHttpsRedirection();

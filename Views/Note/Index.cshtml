@@ -1,0 +1,14 @@
+@model IEnumerable<NoteApp.Models.Note>
+
+<h1>Notes</h1>
+
+@foreach (var note in Model)
+{
+    <div>
+        <h2>@Html.DisplayFor(modelItem => note.Title)</h2>
+        <p>@Html.DisplayFor(modelItem => note.Body)</p>
+        <a href="@Url.Action("Edit", new { id = note.Id })">Edit</a> |
+        <a href="@Url.Action("Details", new { id = note.Id })">Details</a> |
+        <a href="@Url.Action("Delete", new { id = note.Id })">Delete</a>
+    </div>
+}

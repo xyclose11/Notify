@@ -92,6 +92,7 @@ namespace NoteApp.Controllers
         // GET: Note/Delete/5
         public IActionResult Delete(Guid? id)
         {
+
             if (id == null)
             {
                 return NotFound();

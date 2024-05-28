@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace NoteApp.Models;
 
-public class User
+public class User: IdentityUser
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     [MaxLength(128)]

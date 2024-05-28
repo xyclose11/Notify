@@ -1,0 +1,16 @@
+@model NoteApp.Models.Note
+
+<h1>Edit Note</h1>
+
+@using (Html.BeginForm())
+{
+@Html.LabelFor(model => model.Title)
+@Html.EditorFor(model => model.Title)
+
+@Html.LabelFor(model => model.Body)
+@Html.EditorFor(model => model.Body)
+
+<input type="submit" value="Save" />
+}
+
+

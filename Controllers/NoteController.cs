@@ -58,7 +58,7 @@ namespace NoteApp.Controllers
         }
 
         // GET: Note/Edit/5
-        public IActionResult Edit(int? id)
+        public IActionResult Edit(Guid? id)
         {
             if (id == null)
             {
@@ -83,13 +83,10 @@ namespace NoteApp.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                _context.Update(note);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(note);
+            if (!ModelState.IsValid) return View(note);
+            _context.Update(note);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Note/Delete/5
@@ -112,7 +109,7 @@ namespace NoteApp.Controllers
         // POST: Note/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(Guid id)
         {
             var note = _context.Notes.Find(id);
             _context.Notes.Remove(note);

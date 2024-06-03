@@ -2,8 +2,8 @@
 
 <h1>Notes</h1>
 <div class="container-fluid">
-        <div class="row badge bg-secondary">
-                <a class="font-monospace text-white text-decoration-none text-md-center" href="@Url.Action("Create")">New Note +</a>
+        <div class="row badge bg-black">
+                <a class="text-white text-decoration-none text-md-center" href="@Url.Action("Create")">New Note +</a>
         </div>
 </div>
                 
@@ -14,27 +14,27 @@
         <div class="row justify-content-sm-center">
                 @foreach (var note in Model)
                 { 
-                        <div class="card m-2 p-0" style="width: 12rem;">
+                        <div class="card m-2 p-0" style="width: 16rem; height: auto; max-height: 30rem;">
                                 <div class="card-header">
                                         <h2>@Html.DisplayFor(modelItem => note.Title)</h2>
-                                        
                                 </div>
                                 
-                                <div class="card-body">
+                                <div class="card-body ms-3 overflow-auto">
                                         <p class="card-text">@Html.DisplayFor(modelItem => note.Body)</p>
                                 </div>
 
-                                <div class="card-footer">
-
-                                        <div class="badge bg-secondary text-wrap">
-                                                <a class="text-decoration-none text-md-center font-monospace text-white" href="@Url.Action("Edit", new { id = note.Id })">Edit</a>
-                                        </div>
-                                        <div class="badge bg-secondary text-wrap">
-                                                <a class="text-decoration-none text-md-center font-monospace text-white" href="@Url.Action("Details", new { id = note.Id })">Details</a>
-                                        </div>
-                                        <div class="badge bg-secondary text-wrap">
-                                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                                        Delete
+                                <div class="card-footer p-0 pb-2 pt-2">
+                                        
+                                        <div class="btn-group btn-group-sm">
+                                                
+                                                <button class="btn btn-secondary" style="border-top-left-radius: 4px; border-bottom-left-radius: 4px">
+                                                        <a class="text-decoration-none text-md-center text-white" href="@Url.Action("Edit", new { id = note.Id })">Edit</a>
+                                                </button>
+                                                <button class="btn btn-primary">
+                                                        <a class="text-decoration-none text-md-center text-white" href="@Url.Action("Details", new { id = note.Id })">Details</a>
+                                                </button>
+                                                <button type="button" class="btn btn-danger" style="border-top-right-radius: 4px; border-bottom-right-radius: 4px" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                        <a class="text-decoration-none text-md-center text-white">Delete</a>
                                                 </button>
                                                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                         <div class="modal-dialog">
@@ -45,12 +45,12 @@
                                                                         </div>
                                                                         <div class="modal-body">
                                                                                 <button type="button" class="btn btn-danger delete-note" data-note-id="@note.Id">Delete</button>
-                                                                                <a class="text-decoration-none text-md-center font-monospace text-black" href="@Url.Action("Delete", new { id = note.Id })">Delete</a>
                                                                         </div>
                                                                 </div>
                                                         </div>
                                                 </div>
                                         </div>
+
                                 </div>
 
                         </div>

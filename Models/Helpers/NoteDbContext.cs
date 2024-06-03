@@ -19,13 +19,38 @@ public class NoteDbContext : IdentityDbContext<User>
         options.UseNpgsql(Configuration.GetConnectionString("NoteDbContext"));
     }
     
-    public DbSet<User> Users { get; set; }
     public DbSet<Note> Notes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<User>().ToTable("User");
         modelBuilder.Entity<Note>().ToTable("Note");
     }
+}
+
+public class UserManagementContext : IdentityDbContext<User>
+{
+    
+    protected readonly IConfiguration Configuration;
+
+    public UserManagementContext(IConfiguration configuration, DbContextOptions<UserManagementContext> options)
+        : base(options)
+    {
+        Configuration = configuration;
+    }
+    
+    
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    {
+        options.UseNpgsql(Configuration.GetConnectionString("NoteDbContext"));
+    }    
+    
+    public DbSet<User> Users { get; set; }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<User>().ToTable("User");
+    }
+
 }

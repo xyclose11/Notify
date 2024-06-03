@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using NoteApp.Models;
 using NoteApp.Models.Helpers;
+using NoteApp.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,6 +13,8 @@ builder.Services.AddControllersWithViews();
 #region Database Connection
 builder.Services.AddDbContext<NoteDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("NoteDbContext")));
+
+builder.Services.AddDbContext<UserManagementContext>();
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

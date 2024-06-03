@@ -14,18 +14,43 @@
         <div class="row justify-content-sm-center">
                 @foreach (var note in Model)
                 { 
-                        <div class="col-sm-4 border border-secondary border-1 rounded m-1 p-1">
-                                <h2>@Html.DisplayFor(modelItem => note.Title)</h2>
-                                <p>@Html.DisplayFor(modelItem => note.Body)</p>
+                        <div class="card m-2 p-0" style="width: 12rem;">
+                                <div class="card-header">
+                                        <h2>@Html.DisplayFor(modelItem => note.Title)</h2>
+                                        
+                                </div>
+                                
+                                <div class="card-body">
+                                        <p class="card-text">@Html.DisplayFor(modelItem => note.Body)</p>
+                                </div>
 
-                                <div class="badge bg-secondary text-wrap">
-                                        <a class="text-decoration-none text-md-center font-monospace text-white" href="@Url.Action("Edit", new { id = note.Id })">Edit</a>
-                                </div>                                
-                                <div class="badge bg-secondary text-wrap">
-                                        <a class="text-decoration-none text-md-center font-monospace text-white" href="@Url.Action("Details", new { id = note.Id })">Details</a>
-                                </div>                                
-                                <div class="badge bg-secondary text-wrap">
-                                        <a class="text-decoration-none text-md-center font-monospace text-white" href="@Url.Action("Delete", new { id = note.Id })">Delete</a>
+                                <div class="card-footer">
+
+                                        <div class="badge bg-secondary text-wrap">
+                                                <a class="text-decoration-none text-md-center font-monospace text-white" href="@Url.Action("Edit", new { id = note.Id })">Edit</a>
+                                        </div>
+                                        <div class="badge bg-secondary text-wrap">
+                                                <a class="text-decoration-none text-md-center font-monospace text-white" href="@Url.Action("Details", new { id = note.Id })">Details</a>
+                                        </div>
+                                        <div class="badge bg-secondary text-wrap">
+                                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                        Delete
+                                                </button>
+                                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                                <h1 class="modal-title text-black fs-5" id="exampleModalLabel">Delete Confirmation</h1>
+                                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                                <button type="button" class="btn btn-danger delete-note" data-note-id="@note.Id">Delete</button>
+                                                                                <a class="text-decoration-none text-md-center font-monospace text-black" href="@Url.Action("Delete", new { id = note.Id })">Delete</a>
+                                                                        </div>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        </div>
                                 </div>
 
                         </div>
@@ -33,4 +58,29 @@
                 }
         </div>
 </div>
+
+<script>
+        $(document).ready(function() {
+                $('.delete-note').on('click', function() {
+                        const noteId = $(this).data('note-id');
+                        $.ajax({
+                                url: '/Note/Delete/' + noteId,
+                                type: 'POST',
+                                headers: {
+                                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                                },
+                                success: function(result) {
+                                        if (result.success) {
+                                                // Remove the note from the DOM
+                                                $(this).closest('.card').remove();
+                                        } else {
+                                                // Handle error
+                                                alert('Error deleting note.');
+                                        }
+                                }
+                                
+                        });
+                });
+        });
+</script>
 

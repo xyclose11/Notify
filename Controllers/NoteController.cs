@@ -89,33 +89,30 @@ namespace NoteApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Note/Delete/5
-        public IActionResult Delete(Guid? id)
-        {
-
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var note = _context.Notes.FirstOrDefault(m => m.Id == id);
-            if (note == null)
-            {
-                return NotFound();
-            }
-
-            return View(note);
-        }
+        
 
         // POST: Note/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(Guid id)
+        public IActionResult Delete(Guid id)
         {
-            var note = _context.Notes.Find(id);
-            _context.Notes.Remove(note);
-            _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var note = _context.Notes.Find(id);
+                if (note == null)
+                {
+                    return Json(new { success = false });
+                }
+
+                _context.Notes.Remove(note);
+                _context.SaveChanges();
+
+                return Json(new { success = true });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
         }
     }
 }

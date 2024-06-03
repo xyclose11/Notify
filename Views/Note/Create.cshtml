@@ -1,14 +1,31 @@
 @model NoteApp.Models.Note
 
-<h1>Create New Note</h1>
+<div class="justify-content-sm-center m-2">
+    <h1 class="text-black text-center m-2">Create New Note</h1>
+    
+</div>
 
 @using (Html.BeginForm())
 {
-    @Html.LabelFor(model => model.Title)
-    @Html.EditorFor(model => model.Title)
+    <div class="mb-4">
+        @*Header*@
+        <div class="form-floating m-4">
+            @Html.TextBoxFor(model => model.Title, new { @class="form-control"})
+            @Html.LabelFor(model => model.Title)
+        </div>
+        
+        @*Body*@
+        <div class="form-floating m-4">
+            @Html.TextAreaFor(model => model.Body, new { @style = "red", @class="form-control" ,rows=3})
+            @Html.LabelFor(model => model.Body)
+        </div>
 
-    @Html.LabelFor(model => model.Body)
-    @Html.EditorFor(model => model.Body)
 
-    <input type="submit" value="Save" />
+        <div class="form-floating m-4">
+            <button type="submit" class="btn btn-success" value="Save">Create</button>
+            
+        </div>
+    </div>
+
+
 }

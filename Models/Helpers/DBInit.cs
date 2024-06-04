@@ -1,49 +1,56 @@
+using Microsoft.AspNetCore.Identity;
 using NoteApp.Helpers;
 
 namespace NoteApp.Models.Helpers;
 
 public static class DbInit
 {
-    public static void Initialize(NoteDbContext context)
+    public static async Task Initialize(NoteDbContext noteContext, UserManagementContext userContext, UserManager<User> userManager)
     {
-        if (context.Notes.Any())
-        {
-            return; // DB is already seeded
-        }
+        // if (noteContext.Notes.Any())
+        // {
+        //     return; // DB is already seeded
+        // }
+        //
+        // var notes = new Note[]
+        // {
+        //     new Note { Title = "Example Title 1", Body = "Example Body 1" },
+        //     new Note { Title = "Example Title 2", Body = "Example Body 2" },
+        //     new Note { Title = "Example Title 3", Body = "Example Body 3" },
+        //     new Note { Title = "Example Title 4", Body = "Example Body 4" },
+        // };
+        //
+        // noteContext.Notes.AddRange(notes);
+        // await noteContext.SaveChangesAsync();
 
-        var notes = new Note[]
+        if (userContext.Users.Any())
         {
-            new Note { Title = "Example Title 1", Body = "Example Body 1" },
-            new Note { Title = "Example Title 2", Body = "Example Body 2" },
-            new Note { Title = "Example Title 3", Body = "Example Body 3" },
-            new Note { Title = "Example Title 4", Body = "Example Body 4" },
-        };
-        
-        context.Notes.AddRange(notes);
-        context.SaveChanges();
+            Console.BackgroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("User DB is Already seeded");
+            Console.ResetColor();
+            return; // User database is already seeded
+        }
 
         var users = new User[]
         {
             new User
             {
-                Email = "Example Email 1", FirstName = "FirstName1", LastName = "LName1", Username = "Username1", PasswordHash = "1234"
+                Id = Guid.NewGuid(), ConcurrencyStamp = "1", Email = "thisis@example.com", FirstName = "FirstName1", LastName = "LName1",LockoutEnabled = false,NormalizedEmail = "thisis@example.com",NormalizedUserName = "Username1",
+                PasswordHash = "g0valp0", PhoneNumber = "1234567890", PhoneNumberConfirmed = false, SecurityStamp = "1234567890", TwoFactorEnabled = false, UserName = "Username1"
             },
-            new User
-            {
-                Email = "Example Email 2", FirstName = "FirstName2", LastName = "LName2", Username = "Username2", PasswordHash = "4312"
-            },
-            new User
-            {
-                Email = "Example Email 4", FirstName = "FirstName4", LastName = "LName4", Username = "Username4", PasswordHash = "4341~"
-            },
-            new User
-            {
-                Email = "Example Email 3", FirstName = "FirstName3", LastName = "LName3", Username = "Username3", PasswordHash = "4121"
-            },
+
         };
 
-        context.Users.AddRange(users);
-        context.SaveChanges();
+        foreach (var user in users)
+        {
+            var result = await userManager.CreateAsync(user, "DefaultPassword123!");
+            Console.BackgroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(result);
+            Console.ResetColor();
+            if (!result.Succeeded)
+            {
+                throw new Exception(string.Join("\n", result.Errors.Select(x => x.Description)));
+            }
+        }
     }
-    
 }

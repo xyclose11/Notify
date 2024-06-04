@@ -4,7 +4,7 @@ using NoteApp.Models;
 
 namespace NoteApp.Helpers;
 
-public class NoteDbContext : IdentityDbContext<User>
+public class NoteDbContext : DbContext
 {
     protected readonly IConfiguration Configuration;
 
@@ -50,7 +50,6 @@ public class UserManagementContext : IdentityDbContext<User>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<User>().ToTable("User");
     }
 
 }

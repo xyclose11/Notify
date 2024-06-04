@@ -14,7 +14,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<NoteDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("NoteDbContext")));
 
-builder.Services.AddDbContext<UserManagementContext>();
+builder.Services.AddDbContext<UserManagementContext>(options => 
+    options.UseNpgsql(builder.Configuration.GetConnectionString("NoteDbContext")));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -25,7 +26,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 #region UserAuthentication
 
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<NoteDbContext>();
+    .AddEntityFrameworkStores<UserManagementContext>();
 
 builder.Services.AddRazorPages();
 
@@ -80,9 +81,15 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-    var context = services.GetRequiredService<NoteDbContext>();
-    context.Database.EnsureCreated();
-    DbInit.Initialize(context);
+    var noteContext = services.GetRequiredService<NoteDbContext>();
+    noteContext.Database.EnsureCreated();
+
+    var userContext = services.GetRequiredService<UserManagementContext>();
+    userContext.Database.EnsureCreated();
+    
+    var userManager = services.GetRequiredService<UserManager<User>>();
+    
+    DbInit.Initialize(noteContext, userContext, userManager);
 }
 
 app.UseHttpsRedirection();
@@ -93,16 +100,10 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapRazorPages().RequireAuthorization();
-    endpoints.MapControllers();
-});
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 app.MapRazorPages();
 
 app.Run();

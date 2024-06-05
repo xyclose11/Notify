@@ -107,6 +107,14 @@ namespace NoteApp.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+            
+            [Required]
+            [DataType(DataType.Date)]
+            public DateTime _createdAt { get; set; }
+            
+            [Required]
+            [DataType(DataType.Date)]
+            public DateTime _updatedAt { get; set; }
         }
 
 
@@ -126,6 +134,9 @@ namespace NoteApp.Areas.Identity.Pages.Account
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
 
+                user.CreatedAt = DateTime.Now;
+                user.UpdatedAt = DateTime.Now;
+                
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -133,10 +144,12 @@ namespace NoteApp.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-
+                    _userManager.AddToRoleAsync(user, "User").Wait();
+                    
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    
                     var callbackUrl = Url.Page(
                         "/Account/ConfirmEmail",
                         pageHandler: null,

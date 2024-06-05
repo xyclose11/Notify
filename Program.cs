@@ -26,6 +26,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 #region UserAuthentication
 
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<UserManagementContext>();
 
 builder.Services.AddRazorPages();
@@ -90,6 +91,25 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<User>>();
     
     DbInit.Initialize(noteContext, userContext, userManager);
+
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    if (!roleManager.RoleExistsAsync("Admin").Result)
+    {
+        var role = new IdentityRole("Admin");
+        var roleResult = roleManager.CreateAsync(role).Result;
+    }
+
+    if (!roleManager.RoleExistsAsync("User").Result)
+    {
+        var role = new IdentityRole("User");
+        var roleResult = roleManager.CreateAsync(role).Result;
+    }
+
+    if (!roleManager.RoleExistsAsync("Guest").Result)
+    {
+        var role = new IdentityRole("Guest");
+        var roleResult = roleManager.CreateAsync(role).Result;
+    }
 }
 
 app.UseHttpsRedirection();

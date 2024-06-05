@@ -7,11 +7,14 @@ public class User: IdentityUser
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     [MaxLength(128)]
+    [PersonalData] // Deleted when user deletes account
     public string FirstName { get; set; } = null!;
     [MaxLength(128)]
+    [PersonalData] // Deleted when user deletes account
     public string LastName { get; set; } = null!;
     [MaxLength(64)]
-    private DateTime _createdAt = DateTime.Now;
-    private DateTime _updatedAt = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime UpdatedAt { get; set; } = DateTime.Now;
+    
     
 }

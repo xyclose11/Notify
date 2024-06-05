@@ -1,10 +1,14 @@
 @page
 @model NoteApp.Areas.Identity.Pages.Account.Admin.Index
+@inject UserManager<User> UserManager
 
-@{
-    Layout = "Admin/_Layout";
-}
+<h1>
+    Admin Dashboard
+</h1>
 
+
+<h2>@(UserManager.GetUserName(User))</h2>
 <div>
-    
+    <div class="col-md-3">
+    </div>
 </div>

@@ -1,0 +1,31 @@
+@page
+@model NoteApp.Areas.Identity.Pages.Account.Admin.UserList
+@inject UserManager<User> UserManager
+
+
+<table>
+    <thead>
+    <tr>
+        <th>Email</th>
+        <th>Username</th>
+        <th>Last Updated at (UTC)</th>
+        <th>DB-ID</th>
+    </tr>
+    </thead>
+    
+    <tbody>
+    @foreach(var User in Model.Users)
+    {
+        <tr>
+            <td>@(User.Email)</td>
+            <td>@(User.UserName)</td>
+            <td>@(User.UpdatedAt)</td>
+            <td>@(User.Id)</td>
+        </tr>
+    }
+    </tbody>
+    
+</table>
+
+
+

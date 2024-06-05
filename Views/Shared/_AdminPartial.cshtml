@@ -1,0 +1,25 @@
+@using Microsoft.AspNetCore.Identity
+@using NoteApp.Helpers
+@using NoteApp.Models.Helpers
+
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+
+<ul class="navbar-nav">
+
+    @{
+    var user = UserManager.GetUserAsync(User).GetAwaiter().GetResult();
+    bool isInRole = UserManager.IsInRoleAsync(user, "Admin").GetAwaiter().GetResult();
+    
+    if (isInRole)
+    {
+        <li class="nav-item">
+            <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Admin/Index" title="Admin">Admin Dashboard</a>
+        </li>
+    
+    }
+
+    }
+
+</ul>

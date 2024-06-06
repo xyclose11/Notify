@@ -21,3 +21,8 @@ body {
   margin-bottom: 60px;
   font-family: "Nunito", "sans-serif";
 }
+
+.adminNavActive {
+  background-color: #0a53be;
+  color: white;
+}

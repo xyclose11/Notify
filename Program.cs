@@ -19,8 +19,6 @@ builder.Services.AddDbContext<UserManagementContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-
-
 #endregion
 
 #region UserAuthentication

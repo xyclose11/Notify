@@ -1,0 +1,29 @@
+{
+  "name": "noteapp",
+  "version": "1.0.0",
+  "description": "With this app you can do the following:\r - Take notes\r - Download notes\r - **Create** & **Manage** an account\r - Group notes\r - Tag notes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xyclose11/Notify.git"
+  },
+  "keywords": [
+    "note",
+    "noteapp",
+    "tags",
+    "groups",
+    "notes"
+  ],
+  "author": "Harris Gustafson",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/xyclose11/Notify/issues"
+  },
+  "homepage": "https://github.com/xyclose11/Notify#readme",
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

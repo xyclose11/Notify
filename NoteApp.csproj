@@ -107,4 +107,8 @@
       <UpToDateCheckInput Remove="Areas\Identity\Pages\_ValidationScriptsPartial.cshtml" />
     </ItemGroup>
 
+    <ItemGroup>
+      <TypeScriptCompile Include="wwwroot\ts\admin\navigation.ts" />
+    </ItemGroup>
+
 </Project>

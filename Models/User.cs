@@ -5,7 +5,6 @@ namespace NoteApp.Models;
 
 public class User: IdentityUser
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
     [MaxLength(128)]
     [PersonalData] // Deleted when user deletes account
     public string FirstName { get; set; } = null!;
@@ -15,6 +14,8 @@ public class User: IdentityUser
     [MaxLength(64)]
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime UpdatedAt { get; set; } = DateTime.Now;
+    
+    
     
     
 }

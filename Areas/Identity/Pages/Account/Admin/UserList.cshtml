@@ -1,6 +1,9 @@
 @page
 @model NoteApp.Areas.Identity.Pages.Account.Admin.UserList
 @inject UserManager<User> UserManager
+@{
+Layout = "Admin/_AdminLayout";
+}
 
 
 <table class="mw-50 mh-25" style="max-height: 100px">
@@ -8,6 +11,7 @@
     <tr>
         <th>Email</th>
         <th>Username</th>
+        <th>Created At (UTC)</th>
         <th>Last Updated at (UTC)</th>
         <th>DB-ID</th>
     </tr>
@@ -19,6 +23,7 @@
         <tr>
             <td>@(User.Email)</td>
             <td>@(User.UserName)</td>
+            <td>@(User.CreatedAt)</td>
             <td>@(User.UpdatedAt)</td>
             <td>@(User.Id)</td>
         </tr>

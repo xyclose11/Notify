@@ -3,14 +3,16 @@
 @inject UserManager<User> UserManager
 
 
-<partial name="_ManageNav"/>
-<h1>
-    Admin Dashboard
-</h1>
+@{
+    Layout = "Admin/_AdminLayout";
+}
 
-
-<h2>@(UserManager.GetUserName(User))</h2>
 <div>
-    <div class="col-md-3">
+    <h2>@(UserManager.GetUserName(User))</h2>
+    <div>
+        <div class="col-md-3">
+        </div>
     </div>
+    
 </div>
+

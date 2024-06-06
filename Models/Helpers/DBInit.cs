@@ -35,7 +35,7 @@ public static class DbInit
         {
             new User
             {
-                Id = Guid.NewGuid(), ConcurrencyStamp = "1", Email = "thisis@example.com", FirstName = "FirstName1", LastName = "LName1",LockoutEnabled = false,NormalizedEmail = "thisis@example.com",NormalizedUserName = "Username1",
+                ConcurrencyStamp = "1", Email = "thisis@example.com", FirstName = "FirstName1", LastName = "LName1",LockoutEnabled = false,NormalizedEmail = "thisis@example.com",NormalizedUserName = "Username1",
                 PasswordHash = "g0valp0", PhoneNumber = "1234567890", PhoneNumberConfirmed = false, SecurityStamp = "1234567890", TwoFactorEnabled = false, UserName = "Username1", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now
             },
 

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using NoteApp.Models;
@@ -9,12 +10,12 @@ public class UserList : PageModel
 {
 
     private readonly UserManager<User> _userManager;
+    private readonly ILogger<UserList> _logger;
     
-
-    
-    public UserList(UserManager<User> userManager)
+    public UserList(UserManager<User> userManager, ILogger<UserList> logger)
     {
         _userManager = userManager;
+        _logger = logger;
     }
     
     public List<User> Users { get; set; }
@@ -42,6 +43,30 @@ public class UserList : PageModel
             .Skip((CurrentPage - 1) * ItemsPerPage)
             .Take(ItemsPerPage)
             .ToListAsync();
-        
     }
+
+    public async Task<IActionResult> OnPostAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user != null)
+        {
+            var result = await _userManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("Successfully deleted user with ID {UserId}. Success Messages: {Errors}", userId, result.Errors);
+                // Redirect to the same page to refresh
+                return RedirectToPage();
+            }
+            else
+            {
+                _logger.LogError("Failed to delete user with ID {UserId}. Errors: {Errors}", userId, result.Errors);
+            }
+        }
+        
+        // If we got this far, something failed. Redisplay the page.
+        return Page();
+    }
+    
+    
+    
 }

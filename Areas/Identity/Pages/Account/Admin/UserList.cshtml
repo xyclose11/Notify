@@ -5,47 +5,56 @@
 Layout = "Admin/_AdminLayout";
 }
 
-
-<table class="mw-50 mh-25" style="max-height: 100px">
-    <thead>
-    <tr>
-        <th>Email</th>
-        <th>Username</th>
-        <th>Created At (UTC)</th>
-        <th>Last Updated at (UTC)</th>
-        <th>DB-ID</th>
-    </tr>
-    </thead>
-    
-    <tbody>
-    @foreach(var User in Model.Users)
-    {
+<div class="rounded">
+    <table class="table table-hover table-striped table-bordered" style="max-height: 100px">
+        <thead>
         <tr>
-            <td>@(User.Email)</td>
-            <td>@(User.UserName)</td>
-            <td>@(User.CreatedAt)</td>
-            <td>@(User.UpdatedAt)</td>
-            <td>@(User.Id)</td>
+            <th scope="col">Email</th>
+            <th scope="col">Username</th>
+            <th scope="col">Created At (UTC)</th>
+            <th scope="col">Last Updated at (UTC)</th>
+            <th scope="col">DB-ID</th>
+            <th scope="col">Actions</th>
         </tr>
-    }
-    </tbody>
-    
-</table>
+        </thead>
+        <tbody>
+        @foreach(var User in Model.Users)
+        {
+            <tr>
+                <td>@(User.Email)</td>
+                <td>@(User.UserName)</td>
+                <td>@(User.CreatedAt)</td>
+                <td>@(User.UpdatedAt)</td>
+                <td>@(User.Id)</td>
+                <td>
+                    <form method="post" class="delete-user-form">
+                        <input type="hidden" name="userId" value="@User.Id"/>
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+        
+    </table>
 
-<!-- Pagination -->
-<div>
-    @if (Model.CurrentPage > 1)
-    {
-        <a href="?currentPage=@(Model.CurrentPage - 1)">Previous</a>
-    }
-    
-    <span>Page @Model.CurrentPage of @Model.TotalPages</span>
-    
-    @if (Model.CurrentPage < Model.TotalPages)
-    {
-        <a href="?currentPage=@(Model.CurrentPage + 1)">Next</a>
-    }
+    <!-- Pagination -->
+    <div>
+        @if (Model.CurrentPage > 1)
+        {
+            <a href="?currentPage=@(Model.CurrentPage - 1)">Previous</a>
+        }
+        
+        <span>Page @Model.CurrentPage of @Model.TotalPages</span>
+        
+        @if (Model.CurrentPage < Model.TotalPages)
+        {
+            <a href="?currentPage=@(Model.CurrentPage + 1)">Next</a>
+        }
+    </div>
 </div>
 
-
+@section Scripts {
+    <script src="~/js/userList.js"></script>
+}
 

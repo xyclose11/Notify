@@ -109,6 +109,11 @@
 
     <ItemGroup>
       <TypeScriptCompile Include="wwwroot\ts\admin\navigation.ts" />
+      <TypeScriptCompile Include="wwwroot\ts\admin\userList.ts" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Hubs\Admin\" />
     </ItemGroup>
 
 </Project>

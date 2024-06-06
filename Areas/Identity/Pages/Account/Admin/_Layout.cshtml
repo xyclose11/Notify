@@ -4,7 +4,10 @@ if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout !
 {
 Layout = parentLayout.ToString();
 }
-// else clause removed
+else
+{
+    Layout = "/Areas/Identity/Pages/Account/Admin/_Layout.cshtml";
+}
 }
 
 <h1>Manage your account</h1>

@@ -1,23 +1,33 @@
 using Microsoft.AspNetCore.Mvc;
 using NoteApp.Models;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using NoteApp.Helpers;
+
 
 namespace NoteApp.Controllers
 {
     public class NoteController : Controller
     {
         private readonly NoteDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public NoteController(NoteDbContext context)
+        public NoteController(NoteDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Note
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(_context.Notes.ToList());
+            var userId = _userManager.GetUserId(User);
+            var notes = await _context.Notes
+                .Where(note => note.IsOwnedBy == userId)
+                .ToListAsync();
+            
+            return View(notes);
         }
 
         // GET: Note/Details/5
@@ -48,12 +58,17 @@ namespace NoteApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("Id,Title,Body")] Note note)
         {
+            note.IsOwnedBy = _userManager.GetUserId(User);
+            note.CreatedAt = DateTime.UtcNow;
+            note.UpdatedAt = DateTime.UtcNow;
+            
             if (ModelState.IsValid)
             {
                 _context.Add(note);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(note);
         }
 

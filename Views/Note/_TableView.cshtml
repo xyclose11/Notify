@@ -1,0 +1,19 @@
+@model IEnumerable<NoteApp.Models.Note>
+
+<table>
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Body</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var note in Model)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => note.Title)</td>
+            <td>@Html.DisplayFor(modelItem => note.Body)</td>
+        </tr>
+    }
+    </tbody>
+</table>

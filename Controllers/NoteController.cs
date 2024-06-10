@@ -129,5 +129,21 @@ namespace NoteApp.Controllers
                 return Json(new { success = false });
             }
         }
+
+        public IActionResult GetNotes(string view)
+        {
+            var userId = _userManager.GetUserId(User);
+            var notes = _context.Notes
+                .Where(note => note.IsOwnedBy == userId)
+                .ToList();
+
+            switch (view)
+            {
+                case "Table":
+                    return PartialView("_TableView", notes);
+                default:
+                    return PartialView("_CardView", notes);
+            }
+        }
     }
 }

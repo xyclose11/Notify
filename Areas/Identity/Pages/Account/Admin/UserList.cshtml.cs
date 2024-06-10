@@ -66,6 +66,33 @@ public class UserList : PageModel
         // If we got this far, something failed. Redisplay the page.
         return Page();
     }
+
+    public async Task<IActionResult> OnPostAddDummyUserAsync()
+    {
+        var dummyUser = new User
+        {
+            UserName = "dummyUser",
+            Email = "testUser2@example.com",
+            FirstName = "John",
+            LastName = "Doe",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            
+        };
+
+        var result = await _userManager.CreateAsync(dummyUser);
+
+        if (result.Succeeded)
+        {
+            _logger.LogInformation("Test user created successfully.");
+        }
+        else
+        {
+            _logger.LogError("Failed to create a test user. Errors: {Errors}", result.Errors);
+        }
+
+        return RedirectToPage();
+    }
     
     
     

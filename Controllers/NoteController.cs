@@ -137,13 +137,11 @@ namespace NoteApp.Controllers
                 .Where(note => note.IsOwnedBy == userId)
                 .ToList();
 
-            switch (view)
+            return view switch
             {
-                case "Table":
-                    return PartialView("_TableView", notes);
-                default:
-                    return PartialView("_CardView", notes);
-            }
+                "Table" => PartialView("_TableView", notes),
+                _ => PartialView("_CardView", notes)
+            };
         }
     }
 }

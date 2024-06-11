@@ -1,6 +1,12 @@
-@model IEnumerable<NoteApp.Models.Note>
+@using Microsoft.AspNetCore.Identity
+@model NoteApp.Models.ViewModels.Notes.NoteIndexViewModel
+@inject UserManager<User> UserManager
 
 <h1>Notes</h1>
+@if (Model.Roles.Contains("Admin"))
+{
+        <p>ADMIN</p>
+}
 <div class="container-fluid">
         <div class="row badge bg-black">
                 <a class="text-white text-decoration-none text-md-center" href="@Url.Action("Create")">New Note +</a>

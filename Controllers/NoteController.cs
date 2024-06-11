@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NoteApp.Helpers;
+using NoteApp.Models.ViewModels.Notes;
 
 
 namespace NoteApp.Controllers
@@ -12,22 +13,34 @@ namespace NoteApp.Controllers
     {
         private readonly NoteDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public NoteController(NoteDbContext context, UserManager<User> userManager)
+        public NoteController(NoteDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         // GET: Note
         public async Task<IActionResult> Index()
         {
             var userId = _userManager.GetUserId(User);
+            var user = await _userManager.FindByIdAsync(userId);
+            var roles = await _userManager.GetRolesAsync(user);
+            
+            
             var notes = await _context.Notes
                 .Where(note => note.IsOwnedBy == userId)
                 .ToListAsync();
+
+            var model = new NoteIndexViewModel
+            {
+                Notes = notes,
+                Roles = roles
+            };
             
-            return View(notes);
+            return View(model);
         }
 
         // GET: Note/Details/5

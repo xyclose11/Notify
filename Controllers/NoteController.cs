@@ -1,6 +1,9 @@
+using System.Collections;
 using Microsoft.AspNetCore.Mvc;
 using NoteApp.Models;
 using System.Linq;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NoteApp.Helpers;
@@ -156,5 +159,85 @@ namespace NoteApp.Controllers
                 _ => PartialView("_CardView", notes)
             };
         }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateTestNotes()
+        {
+            
+            List<Note> noteList = new List<Note>();
+ 
+            List<string> titles = [
+                "This is an example of a title.",
+                "Today a goose went to the pond.",
+                "Doctors appointment on the 14th of July 2024. 07/14/2024",
+                "There are many variations of plants in the garden at the college.",
+                "The sky seemed to be more green than blue today.",
+                "Asparagus, Leeks, Ground Beef, Tomatoes...",
+                "Dentist @ 5:00 pm CST",
+                "Reminder to research into the world of trees.",
+                "School starts on the 21 of August",
+                "Daily note!",
+                "Reminder that birds are fake."
+            ];
+            
+            List<string> bodyEntries =
+            [
+                "Today I learned about the importance of clean code. It's not just about making the code work, it's also about making it understandable and maintainable.",
+                "I need to remember to buy groceries after work. The list includes milk, bread, eggs, and some fresh fruits.",
+                "I had a great idea for a new feature in our app. I think adding a dark mode would really enhance the user experience.",
+                "I had a meeting with the team today. We discussed the progress of our current project and planned the tasks for next week.",
+                "I read an interesting article about machine learning. It's amazing how it's being used in so many different fields.",
+                "I watched a movie called 'The Imitation Game' today. It's about Alan Turing and his contributions to computer science. Highly recommended!",
+                "I need to schedule a dentist appointment. I should do it first thing in the morning.",
+                "I started reading a new book. It's called 'Clean Code' by Robert C. Martin. So far, it's very informative and helpful.",
+                "I went for a run in the park today. The weather was perfect and I managed to run 5km. I feel great!",
+                "I need to research more about design patterns. They seem to be very useful for writing better and more efficient code."
+            ];
+            
+            // Loop iterator
+            var randIterator = RandomNumberGenerator.GetInt32(0, 10);
+
+            // Set to remember what title/body values were used before
+            HashSet<int> usedNoteValues = new HashSet<int>();
+            
+            
+            for (var i = 0; i < randIterator; i++)
+            {
+                var newRand = RandomNumberGenerator.GetInt32(0, 10);
+
+                while (usedNoteValues.Contains(newRand))
+                {
+                    // Generate new index until uniqueness is reached
+                    newRand = RandomNumberGenerator.GetInt32(0, 10);
+                }
+                
+                // Add index to set
+                usedNoteValues.Add(newRand);
+                
+                noteList.Add(new Note
+                {
+                    Id = new Guid(),
+                    Title = titles[newRand],
+                    Body = bodyEntries[newRand],
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    IsOwnedBy = _userManager.GetUserId(User),
+                });
+            }
+
+            if (!ModelState.IsValid) return BadRequest("Note creation failed due to invalid model state.");
+            
+            // Save each note to the DB
+            foreach (var note in noteList)
+            {
+                _context.Add(note);
+            }
+            await _context.SaveChangesAsync();
+            
+            // Redirect to the page
+            return RedirectToAction(nameof(Index));
+
+        }
+        
     }
 }

@@ -5,8 +5,12 @@
 <h1>Notes</h1>
 @if (Model.Roles.Contains("Admin"))
 {
-        <p>ADMIN</p>
+        
+        <div class="row badge bg-black">
+                <a class="text-md-center text-white text-decoration-none" href="@Url.Action("CreateTestNotes")">Create Test Notes</a>
+        </div>
 }
+
 <div class="container-fluid">
         <div class="row badge bg-black">
                 <a class="text-white text-decoration-none text-md-center" href="@Url.Action("Create")">New Note +</a>

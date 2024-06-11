@@ -3,27 +3,30 @@
 @inject UserManager<User> UserManager
 
 <h1>Notes</h1>
-@if (Model.Roles.Contains("Admin"))
-{
+<div class="p-0 container mb-1 mt-1 button-select-group">
+        <div class="btn-group-sm" role="group" aria-label="Note Creation Button Group">
         
-        <div class="row badge bg-black">
-                <a class="text-md-center text-white text-decoration-none" href="@Url.Action("CreateTestNotes")">Create Test Notes</a>
-        </div>
-}
+                @if (Model.Roles.Contains("Admin"))
+                { 
+                        <a class="btn btn-primary text-md-center text-white text-decoration-none" href="@Url.Action("CreateTestNotes")">Create Test Notes</a>
+                }
 
-<div class="container-fluid">
-        <div class="row badge bg-black">
-                <a class="text-white text-decoration-none text-md-center" href="@Url.Action("Create")">New Note +</a>
+
+                <a class="btn btn-secondary text-white text-decoration-none text-md-center" href="@Url.Action("Create")">New Note +</a>
+
+
         </div>
+        <select class="form-select" aria-label="View Selector" id="viewSelector">
+                <option value="Card">Card View</option>
+                <option value="Table">Table View</option>
+        </select>
+        
+
 </div>
 
-<select id="viewSelector">
-        <option value="Card">Card View</option>
-        <option value="Table">Table View</option>
-</select>
 
-<div class="container text-center" id="notesSection">
-
+<div class="container text-center mb-5" id="notesSection">
+        <!-- Where the partial views are rendered -->
 </div>
 
 

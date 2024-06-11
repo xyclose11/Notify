@@ -18,6 +18,10 @@ namespace NoteApp.Controllers
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
+        public int CurrentPage { get; set; } = 1;
+        public int TotalPages { get; set; } = 1;
+        public int ItemsPerPage { get; set; } = 10;
+        
         public NoteController(NoteDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
@@ -36,7 +40,7 @@ namespace NoteApp.Controllers
             var notes = await _context.Notes
                 .Where(note => note.IsOwnedBy == userId)
                 .ToListAsync();
-
+                
             var model = new NoteIndexViewModel
             {
                 Notes = notes,
@@ -146,18 +150,38 @@ namespace NoteApp.Controllers
             }
         }
 
-        public IActionResult GetNotes(string view)
+         
+        public async Task<IActionResult> GetNotes(string view, int currentPage)
         {
             var userId = _userManager.GetUserId(User);
-            var notes = _context.Notes
+            
+            if (view == "Table")
+            {
+                CurrentPage = currentPage > 0 ? currentPage : 1;
+
+                
+                var totalNotesForUser = await _context.Notes.Where(note => note.IsOwnedBy == userId).CountAsync();
+
+                TotalPages = (int)Math.Ceiling(totalNotesForUser / (double)ItemsPerPage);
+
+                ViewBag.CurrentPage = CurrentPage;
+                ViewBag.TotalPages = TotalPages;
+                
+                var tableNotes = await _context.Notes
+                    .Where(note => note.IsOwnedBy == userId)
+                    .Skip((CurrentPage - 1) * ItemsPerPage)
+                    .Take(ItemsPerPage)
+                    .ToListAsync();
+
+                return PartialView("_TableView", tableNotes);
+            }
+
+            
+            var cardNotes = _context.Notes
                 .Where(note => note.IsOwnedBy == userId)
                 .ToList();
 
-            return view switch
-            {
-                "Table" => PartialView("_TableView", notes),
-                _ => PartialView("_CardView", notes)
-            };
+            return PartialView("_CardView", cardNotes);
         }
 
         [Authorize(Roles = "Admin")]
@@ -238,6 +262,8 @@ namespace NoteApp.Controllers
             return RedirectToAction(nameof(Index));
 
         }
+        
+        
         
     }
 }

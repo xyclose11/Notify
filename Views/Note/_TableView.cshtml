@@ -1,22 +1,45 @@
 @model IEnumerable<NoteApp.Models.Note>
-<div class="row justify-content-sm-center">
 
-<table>
-    <thead>
-    <tr>
-        <th>Title</th>
-        <th>Body</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var note in Model)
-    {
+<div class="row justify-content-sm-center mb-2 mt-2" id="noteViewTableContainer">
+
+    <table class="table-bordered table-hover table-striped">
+        <thead>
         <tr>
-            <td>@Html.DisplayFor(modelItem => note.Title)</td>
-            <td>@Html.DisplayFor(modelItem => note.Body)</td>
+            <th scope="col">Select</th>
+            <th scope="col">Title</th>
+            <th scope="col">Body</th>
+            <th scope="col">Actions</th>
         </tr>
-    }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        @foreach (var note in Model)
+        {
+            <tr>
+                <td>
+                    <input class="form-check-input" value="" type="checkbox"/>
+                </td>
+                <td>@Html.DisplayFor(modelItem => note.Title)</td>
+                <td>@Html.DisplayFor(modelItem => note.Body)</td>
+                <td>These are actions</td>
+            </tr>
+        }
+        </tbody>
+    </table>
 
+    <!-- Pagination -->
+    <div>
+        <p>@ViewBag.CurrentPage</p>
+        <p>@ViewBag.TotalPages</p>
+        @if (ViewBag.CurrentPage > 1)
+        {
+            <a class="pagination-link" href="@Url.Action("GetNotes", new { view = "Table", currentPage = ViewBag.CurrentPage - 1 })">Previous</a>
+        }
+
+        <span class="text-black">Page @ViewBag.CurrentPage of @ViewBag.TotalPages</span>
+
+        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+        {
+            <a class="pagination-link" href="@Url.Action("GetNotes", new { view = "Table", currentPage = ViewBag.CurrentPage + 1 })">Next</a>
+        }
+    </div>
 </div>

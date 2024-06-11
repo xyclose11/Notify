@@ -2,6 +2,21 @@ import $ from 'jquery';
 
 document.addEventListener('DOMContentLoaded', () => {
     
+    // TableView Pagination Handlers
+    $('body').on('click', '.pagination-link', function(e) {
+        e.preventDefault();
+
+        const url = $(this).attr('href');
+
+        if (url) {
+            $.get(url, function (data) {
+                $('#noteViewTableContainer').html(data);
+            })
+        }
+    })
+    // End TableView Pagination Handlers
+    
+    // NoteView Handlers
     const storedView: string | null = localStorage.getItem('noteView');
     
     if (storedView) {
@@ -14,6 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('noteView', selectedView);
         loadView(selectedView);
     })
+    // End NoteView Handlers
+    
 });
 
 function loadView(view: string) {
@@ -21,3 +38,4 @@ function loadView(view: string) {
         $('#notesSection').html(data);
     })
 }
+

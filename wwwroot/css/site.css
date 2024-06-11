@@ -26,3 +26,13 @@ body {
   background-color: #0a53be;
   color: white;
 }
+
+.button-select-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-select {
+  max-width: 125px;
+}

@@ -29,50 +29,7 @@
     <!-- Pagination -->
     <nav aria-label="Pagination">
         <ul class="pagination justify-content-center m-2" id="noteViewPagination">
-            @* <li class="page-item"> *@
-            @*     $1$ @if (ViewBag.CurrentPage > 1) #1# *@
-            @*     $1$ { #1# *@
-            @*     $1$     <a class="pagination-link page-link" href="@Url.Action("GetNotes", new { view = "Table", currentPage = ViewBag.CurrentPage - 1 })">Previous</a> #1# *@
-            @*     $1$ } #1# *@
-            @*     $1$ else #1# *@
-            @*     $1$ { #1# *@
-            @*     $1$     <a class="pagination-link page-link disabled">Previous</a> #1# *@
-            @*     $1$      #1# *@
-            @*     $1$ } #1# *@
-            @* </li> *@
-            @* @{ *@
-            @*      *@
-            @*     $1$ for (var i = 1; i < (ViewBag.TotalPages + 1 < 10 ? ViewBag.TotalPages + 1: 9); i++) #1# *@
-            @*     $1$ { #1# *@
-            @*     $1$     if (ViewBag.CurrentPage == i) #1# *@
-            @*     $1$     { #1# *@
-            @*     $1$         <li class="page-item active"> #1# *@
-            @*     $1$             <a class="pagination-link page-link" href="@Url.Action("GetNotes", new { view = "Table", currentPage = i})">@i</a> #1# *@
-            @*     $1$         </li> #1# *@
-            @*     $1$     } #1# *@
-            @*     $1$     else #1# *@
-            @*     $1$     { #1# *@
-            @*     $1$         <li class="page-item"> #1# *@
-            @*     $1$             <a class="pagination-link page-link" href="@Url.Action("GetNotes", new { view = "Table", currentPage = i})">@i</a> #1# *@
-            @*     $1$         </li> #1# *@
-            @*     $1$     } #1# *@
-            @*     $1$ } #1# *@
-            @* } *@
-            @* *@
-            @* <li class="page-item"> *@
-            @*     $1$ @if (ViewBag.CurrentPage < ViewBag.TotalPages) #1# *@
-            @*     $1$ { #1# *@
-            @*     $1$     <a class="pagination-link page-link" href="@Url.Action("GetNotes", new { view = "Table", currentPage = ViewBag.CurrentPage + 1 })">Next</a> #1# *@
-            @*     $1$ } #1# *@
-            @*     $1$ else #1# *@
-            @*     $1$ { #1# *@
-            @*     $1$     <a class="pagination-link page-link disabled">Next</a> #1# *@
-            @*     $1$ #1# *@
-            @*     $1$ } #1# *@
-            @* </li> *@
         </ul>
-        
-
     </nav>
 </div>
 

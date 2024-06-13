@@ -20,13 +20,13 @@ public class NoteDbContext : DbContext
     }
     
     public DbSet<Note> Notes { get; set; }
-    public DbSet<NoteCategory> Categories { get; set; }
+    public DbSet<Category> Categories { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Note>().ToTable("Note");
-        modelBuilder.Entity<NoteCategory>().ToTable("NoteCategory");
+        modelBuilder.Entity<Category>().ToTable("NoteCategory");
     }
 }
 

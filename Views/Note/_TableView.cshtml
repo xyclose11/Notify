@@ -21,7 +21,7 @@
                 </td>
                 <td>@Html.DisplayFor(modelItem => note.Title)</td>
                 <td>@Html.DisplayFor(modelItem => note.Body)</td>
-                <td><a asp-action="Create" asp-controller="Category">Create Category</a></td>
+                <td>@Html.DisplayFor(modelItem => note.Category.Name)<a asp-action="Create" asp-controller="Category">+</a></td>
                 <td>These are actions</td>
             </tr>
         }

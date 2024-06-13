@@ -20,6 +20,7 @@ public class Note
     [Required]
     public DateTime UpdatedAt { get; set; }
     
-    [ForeignKey("CategoryId")]
     public Guid? CategoryId { get; set; }
+    [ForeignKey("CategoryId")]
+    public Category Category { get; set; }
 }

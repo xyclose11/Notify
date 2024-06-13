@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NoteApp.Helpers;
 using NoteApp.Models.ViewModels.Notes;
@@ -70,25 +71,33 @@ namespace NoteApp.Controllers
         // GET: Note/Create
         public IActionResult Create()
         {
+            // Pass all the categories to the view in a dropdown list
+            ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name");
             return View();
         }
 
         // POST: Note/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Id,Title,Body")] Note note)
+        public IActionResult Create([Bind("Id,Title,Body,CategoryId")] Note note)
         {
             note.IsOwnedBy = _userManager.GetUserId(User);
             note.CreatedAt = DateTime.UtcNow;
             note.UpdatedAt = DateTime.UtcNow;
+
+            note.Category.CreatedAt = DateTime.UtcNow;
+            note.Category.UpdatedAt = DateTime.UtcNow;
+            note.Category.WhoCreated = _userManager.GetUserId(User);
             
             if (ModelState.IsValid)
             {
-                _context.Add(note);
+                _context.Notes.Add(note);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
-
+            // If the model state is not valid, repopulate the categories and return the view
+            ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name");
+            
             return View(note);
         }
 
@@ -166,8 +175,10 @@ namespace NoteApp.Controllers
 
                 ViewBag.CurrentPage = CurrentPage;
                 ViewBag.TotalPages = TotalPages;
+                ViewBag.Categories = _context.Categories.ToListAsync();
 
                 var tableNotesQuery = _context.Notes
+                    .Include(note => note.Category)
                     .Where(note => note.IsOwnedBy == userId)
                     .Skip((CurrentPage - 1) * ItemsPerPage)
                     .Take(ItemsPerPage);

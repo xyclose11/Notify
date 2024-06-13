@@ -20,7 +20,7 @@ public class CategoryController: Controller
     }
     
     [HttpPost]
-    public IActionResult Create(NoteCategory category)
+    public IActionResult Create(Category category)
     {
 
         if (!ModelState.IsValid)
@@ -41,7 +41,7 @@ public class CategoryController: Controller
         }
         if (ModelState.IsValid)
         {
-            Console.WriteLine(category.Description);
+            
             _context.Categories.Add(category);
             _context.SaveChanges();
             

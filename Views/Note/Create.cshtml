@@ -1,4 +1,6 @@
+@using Microsoft.AspNetCore.Identity
 @model NoteApp.Models.Note
+@inject UserManager<User> UserManager
 
 <div class="justify-content-sm-center m-2">
     <h1 class="text-black text-center m-2">Create New Note</h1>
@@ -16,9 +18,10 @@
         
         @*Body*@
         <div class="form-floating m-4">
-            @Html.TextAreaFor(model => model.Body, new { @style = "red", @class="form-control" ,rows=3})
+            @Html.TextAreaFor(model => model.Body, new { @class="form-control" ,rows=3})
             @Html.LabelFor(model => model.Body)
         </div>
+        
 
 
         <div class="form-floating m-4">

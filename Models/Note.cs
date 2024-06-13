@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NoteApp.Models;
 
@@ -12,18 +13,13 @@ public class Note
     public string Body { get; set; } = null!;
 
     public string? IsOwnedBy { get; set; }
-
-    private enum NoteCategory
-    {
-        Personal,
-        Work,
-        School,
-        Other
-    };
     
-    [Required]
-    public DateTime CreatedAt;
+    [Required] 
+    public DateTime CreatedAt { get; set; }
 
     [Required]
-    public DateTime UpdatedAt;
+    public DateTime UpdatedAt { get; set; }
+    
+    [ForeignKey("CategoryId")]
+    public Guid? CategoryId { get; set; }
 }

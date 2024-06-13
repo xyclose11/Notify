@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $('body').on('click', '.pagination-link', function(e) {
         e.preventDefault();
 
-        const url = $(this).attr('href');
+        const url: string | undefined = $(this).attr('href');
 
         if (url) {
             $.get(url, function (data) {
@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
             })
         }
     })
+    
+    
+    
     // End TableView Pagination Handlers
     
     // NoteView Handlers

@@ -160,7 +160,7 @@ namespace NoteApp.Controllers
         }
 
          
-        public async Task<IActionResult> GetNotes(string view, int currentPage, string sortOption)
+        public async Task<IActionResult> GetNotes(string view, int currentPage)
         {
             var userId = _userManager.GetUserId(User);
             
@@ -175,7 +175,7 @@ namespace NoteApp.Controllers
 
                 ViewBag.CurrentPage = CurrentPage;
                 ViewBag.TotalPages = TotalPages;
-                ViewBag.Categories = _context.Categories.ToListAsync();
+                ViewBag.Categories = await _context.Categories.ToListAsync();
 
                 var tableNotesQuery = _context.Notes
                     .Include(note => note.Category)
@@ -183,23 +183,7 @@ namespace NoteApp.Controllers
                     .Skip((CurrentPage - 1) * ItemsPerPage)
                     .Take(ItemsPerPage);
 
-                switch (sortOption)
-                {
-                    case "dateCreated":
-                        tableNotesQuery = tableNotesQuery.OrderBy(note => note.CreatedAt);
-                        break;
-                    case "dateUpdated":
-                        tableNotesQuery = tableNotesQuery.OrderBy(note => note.UpdatedAt);
-                        break;
-                    case "title":
-                        tableNotesQuery = tableNotesQuery.OrderBy(note => note.Title);
-                        break;
-                    case "body":
-                        tableNotesQuery = tableNotesQuery.OrderBy(note => note.Body);
-                        break;
-                        
-                }
-
+                
                 var tableNotes = await tableNotesQuery.ToListAsync();
 
                 return PartialView("_TableView", tableNotes);

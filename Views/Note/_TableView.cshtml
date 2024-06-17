@@ -45,10 +45,11 @@
 $(document).ready(function() {
     let currentPage = @ViewBag.CurrentPage;
     let totalPage = @ViewBag.TotalPages;
+    let selectedCategory = localStorage.getItem("selectedCategory");
 
     // Generate GoToStart link
     let goToStart = $('<a>').addClass('pagination-link page-link').text('<<<');
-    goToStart.attr('href', `/Note/GetNotes?view=Table&currentPage=${1}&category=${"Robots"}`);
+    goToStart.attr('href', `/Note/GetNotes?view=Table&currentPage=${1}&category=${selectedCategory}`);
 
     let goToStartItem = $('<li>').addClass('page-item').append(goToStart);
     if (currentPage === 1) {
@@ -58,7 +59,7 @@ $(document).ready(function() {
     // Generate Prev link
     let previousLink = $('<a>').addClass('pagination-link page-link').text('Previous');
     if (currentPage > 1) {
-        previousLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage - 1}&category=${"Robots"}`);
+        previousLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage - 1}&category=${selectedCategory}`);
     } else {
         previousLink.addClass('disabled');
     }
@@ -69,7 +70,7 @@ $(document).ready(function() {
     for (let i = currentPage - 1; i >= currentPage - 2; i--) {
         if (i >= 1) {
             let pageLink = $('<a>').addClass('pagination-link page-link');
-            pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${i}&category=${"Robots"}`);
+            pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${i}&category=${selectedCategory}`);
             pageLink.text(i);
 
             let listItem = $('<li>').addClass('page-item');
@@ -82,7 +83,7 @@ $(document).ready(function() {
     let currentLink;
     if (currentPage >= 1 || currentPage <= totalPage) {
         let pageLink = $('<a>').addClass('pagination-link page-link');
-        pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage}&category=${"Robots"}`).text(currentPage);
+        pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage}&category=${selectedCategory}`).text(currentPage);
 
         let listItem = $('<li>').addClass('page-item active disabled');
         listItem.append(pageLink);
@@ -95,7 +96,7 @@ $(document).ready(function() {
     for (let i = currentPage + 1; i <= currentPage + 2; i++) {
         if (i <= totalPage) {
             let pageLink = $('<a>').addClass('pagination-link page-link');
-            pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${i}&category=${"Robots"}`);
+            pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${i}&category=${selectedCategory}`);
             pageLink.text(i);
 
             let listItem = $('<li>').addClass('page-item');
@@ -107,7 +108,7 @@ $(document).ready(function() {
     // Generate Next link
     let nextLink = $('<a>').addClass('pagination-link page-link').text('Next');
     if (currentPage < totalPage) {
-        nextLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage + 1}&category=${"Robots"}`);
+        nextLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage + 1}&category=${selectedCategory}`);
     } else {
         nextLink.addClass('disabled');
     }
@@ -115,7 +116,7 @@ $(document).ready(function() {
 
     // Generate GoToEnd link
     let goToEnd = $('<a>').addClass('pagination-link page-link').text('>>>');
-    goToEnd.attr('href', `/Note/GetNotes?view=Table&currentPage=${totalPage}&category=${"Robots"}`);
+    goToEnd.attr('href', `/Note/GetNotes?view=Table&currentPage=${totalPage}&category=${selectedCategory}`);
 
     let goToEndItem = $('<li>').addClass('page-item').append(goToEnd);
     if (currentPage === totalPage) {
@@ -166,5 +167,6 @@ $(document).ready(function() {
     document.getElementById('categoryDropdown').addEventListener('change', function() {
         // When the selected category changes, store the new value in localStorage
         localStorage.setItem('selectedCategory', this.value);
+        location.reload();
     });
 </script>

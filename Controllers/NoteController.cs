@@ -22,6 +22,7 @@ namespace NoteApp.Controllers
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; } = 1;
         public int ItemsPerPage { get; set; } = 10;
+        public string SelectedCategory { get; set; } = null!;
         
         public NoteController(NoteDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
@@ -157,15 +158,18 @@ namespace NoteApp.Controllers
         }
 
          
-        public async Task<IActionResult> GetNotes(string view, int currentPage, Category category)
+        public async Task<IActionResult> GetNotes(string view, string category, int currentPage)
         {
             var userId = _userManager.GetUserId(User);
-            
+            Console.WriteLine(category);
             if (view == "Table")
             {
                 CurrentPage = currentPage > 0 ? currentPage : 1;
-                
-                var totalNotesForUser = await _context.Notes.Where(note => note.IsOwnedBy == userId).CountAsync();
+                SelectedCategory = category;
+                var totalNotesForUser = await _context.Notes
+                    .Where(note => note.IsOwnedBy == userId)
+                    .Where(note => note.Category.Name == SelectedCategory)
+                    .CountAsync();
 
                 TotalPages = (int)Math.Ceiling(totalNotesForUser / (double)ItemsPerPage);
 
@@ -173,15 +177,20 @@ namespace NoteApp.Controllers
                 ViewBag.TotalPages = TotalPages;
                 ViewBag.Categories = await _context.Categories.ToListAsync();
 
-                
                 var tableNotesQuery = _context.Notes
                     .Include(note => note.Category)
-                    .Where(note => note.IsOwnedBy == userId)
-                    .Skip((CurrentPage - 1) * ItemsPerPage)
-                    .Take(ItemsPerPage);
+                    .Where(note => note.IsOwnedBy == userId);
+
+                if (!string.IsNullOrEmpty(category))
+                {
+                    tableNotesQuery = tableNotesQuery.Where(note => note.Category.Name == category);
+                }
 
                 
-                var tableNotes = await tableNotesQuery.ToListAsync();
+                var tableNotes = await tableNotesQuery
+                    .Skip((CurrentPage - 1) * ItemsPerPage)
+                    .Take(ItemsPerPage)
+                    .ToListAsync();
 
                 return PartialView("_TableView", tableNotes);
             }

@@ -48,7 +48,7 @@ $(document).ready(function() {
 
     // Generate GoToStart link
     let goToStart = $('<a>').addClass('pagination-link page-link').text('<<<');
-    goToStart.attr('href', `/Note/GetNotes?view=Table&currentPage=${1}`);
+    goToStart.attr('href', `/Note/GetNotes?view=Table&currentPage=${1}&category=${"Robots"}`);
 
     let goToStartItem = $('<li>').addClass('page-item').append(goToStart);
     if (currentPage === 1) {
@@ -58,7 +58,7 @@ $(document).ready(function() {
     // Generate Prev link
     let previousLink = $('<a>').addClass('pagination-link page-link').text('Previous');
     if (currentPage > 1) {
-        previousLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage - 1}`);
+        previousLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage - 1}&category=${"Robots"}`);
     } else {
         previousLink.addClass('disabled');
     }
@@ -69,24 +69,24 @@ $(document).ready(function() {
     for (let i = currentPage - 1; i >= currentPage - 2; i--) {
         if (i >= 1) {
             let pageLink = $('<a>').addClass('pagination-link page-link');
-            pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${i}`);
+            pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${i}&category=${"Robots"}`);
             pageLink.text(i);
-            
+
             let listItem = $('<li>').addClass('page-item');
             listItem.append(pageLink);
             leftLinks.unshift(listItem);
         }
     }
-    
+
     // Generate current page link
     let currentLink;
     if (currentPage >= 1 || currentPage <= totalPage) {
         let pageLink = $('<a>').addClass('pagination-link page-link');
-        pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage}`).text(currentPage);
-        
+        pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage}&category=${"Robots"}`).text(currentPage);
+
         let listItem = $('<li>').addClass('page-item active disabled');
         listItem.append(pageLink);
-        
+
         currentLink = listItem;
     }
 
@@ -95,7 +95,7 @@ $(document).ready(function() {
     for (let i = currentPage + 1; i <= currentPage + 2; i++) {
         if (i <= totalPage) {
             let pageLink = $('<a>').addClass('pagination-link page-link');
-            pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${i}`);
+            pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${i}&category=${"Robots"}`);
             pageLink.text(i);
 
             let listItem = $('<li>').addClass('page-item');
@@ -107,7 +107,7 @@ $(document).ready(function() {
     // Generate Next link
     let nextLink = $('<a>').addClass('pagination-link page-link').text('Next');
     if (currentPage < totalPage) {
-        nextLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage + 1}`);
+        nextLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage + 1}&category=${"Robots"}`);
     } else {
         nextLink.addClass('disabled');
     }
@@ -115,21 +115,24 @@ $(document).ready(function() {
 
     // Generate GoToEnd link
     let goToEnd = $('<a>').addClass('pagination-link page-link').text('>>>');
-    goToEnd.attr('href', `/Note/GetNotes?view=Table&currentPage=${totalPage}`);
-    
+    goToEnd.attr('href', `/Note/GetNotes?view=Table&currentPage=${totalPage}&category=${"Robots"}`);
+
     let goToEndItem = $('<li>').addClass('page-item').append(goToEnd);
     if (currentPage === totalPage) {
         goToEndItem.addClass('disabled');
     }
-    
+
     // Append all the links to #noteViewPagination in the correct order
     $('#noteViewPagination').append(goToStartItem, previousListItem, leftLinks, currentLink, rightLinks, nextListItem, goToEndItem);
 });
+
+
 </script>
 
 <script>
     $(document).ready(function () {
         getCategories();
+
     })
 
     function getCategories() {
@@ -146,12 +149,22 @@ $(document).ready(function() {
             // Add an option for each category
             data.forEach(function(category) {
                 var option = document.createElement('option');
-                option.value = category.id;
+                option.value = category.name;
                 option.text = category.name;
                 dropdown.add(option);
             });
-
+            
+            // Set the selected category to the value in localStorage, if it exists
+            var selectedCategory = localStorage.getItem('selectedCategory');
+            if (selectedCategory) {
+                dropdown.value = selectedCategory;
+            }
 
         })
     }
+    
+    document.getElementById('categoryDropdown').addEventListener('change', function() {
+        // When the selected category changes, store the new value in localStorage
+        localStorage.setItem('selectedCategory', this.value);
+    });
 </script>

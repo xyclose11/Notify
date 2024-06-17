@@ -6,4 +6,4 @@ riderModule.iml
 appsettings.json
 /node_modules/
 TODO
-/wwwroot/js/bundle.js
+/wwwroot/js/

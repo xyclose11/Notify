@@ -8,6 +8,8 @@ public class Tag
     [Key]
     public Guid Id { get; init; } = Guid.NewGuid();
 
+    public List<Note> Notes { get; } = [];
+    
     private string _name;
 
     [Required] [MaxLength(128)] public string Name

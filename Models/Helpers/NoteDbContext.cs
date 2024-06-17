@@ -21,12 +21,14 @@ public class NoteDbContext : DbContext
     
     public DbSet<Note> Notes { get; set; }
     public DbSet<Category> Categories { get; set; }
+    public DbSet<Tag> Tags { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Note>().ToTable("Note");
         modelBuilder.Entity<Category>().ToTable("Category");
+        modelBuilder.Entity<Tag>().ToTable("Tag");
     }
 }
 

@@ -24,6 +24,8 @@ public class Note
     [ForeignKey("CategoryId")]
     public Category? Category { get; set; }
 
+    public List<Tag> Tags { get; } = [];
+    
     [Required]
     public bool IsPublic { get; init; } = false;
 }

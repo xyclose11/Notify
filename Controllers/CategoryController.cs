@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NoteApp.Helpers;
@@ -8,10 +9,12 @@ namespace NoteApp.Controllers;
 public class CategoryController: Controller
 {
     private readonly NoteDbContext _context;
+    private readonly UserManager<User> _userManager;
 
-    public CategoryController(NoteDbContext context)
+    public CategoryController(NoteDbContext context, UserManager<User> userManager)
     {
         _context = context;
+        _userManager = userManager;
     }
 
     [HttpGet]
@@ -40,17 +43,14 @@ public class CategoryController: Controller
                 }
             }
         }
-        if (ModelState.IsValid)
-        {
+
+        if (!ModelState.IsValid) return View(category);
+        category.WhoCreated = _userManager.GetUserId(User);
+        _context.Categories.Add(category);
+        _context.SaveChanges();
             
-            _context.Categories.Add(category);
-            _context.SaveChanges();
-            
-            // Redirect to previous page
-            return RedirectToAction("Index", "Note");
-            
-        }
-        return View(category);
+        // Redirect to previous page
+        return RedirectToAction("Index", "Note");
     }
     
     public async Task<IActionResult> GetCategories()

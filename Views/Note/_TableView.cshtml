@@ -3,10 +3,19 @@
 <div class="row justify-content-sm-center p-0 mb-2 mt-2" id="noteViewTableContainer">
 
     <!-- Displays the categories -->
-    <label>Category</label>
-    <select class="form-select" aria-label="Category Selector" id="categoryDropdown">
-        <option></option>
-    </select>
+
+    <div class="dropdown-align-right p-0">
+        <div class="form-floating mb-3 p-0">
+            <select class="form-select" aria-label="Category Selector" id="categoryDropdown">
+                <option></option>
+            </select>
+            <label for="categoryDropdown">Category</label>
+            
+        </div>
+    </div>
+        
+    
+
     
     <table class="table-bordered table-hover table-striped">
         <thead>
@@ -139,19 +148,19 @@ $(document).ready(function() {
     function getCategories() {
         $.get('/Category/GetCategories', function (data) {
             // Assuming the id of your dropdown list is 'categoryDropdown'
-            var dropdown = document.getElementById('categoryDropdown');
+            let dropdown = document.getElementById('categoryDropdown');
 
             // Clear any existing options
             dropdown.innerHTML = '';
-            var option = document.createElement('option');
+            let option = document.createElement('option');
             option.value = "";
             option.text = "";
             dropdown.add(option);
             // Add an option for each category
             data.forEach(function(category) {
-                var option = document.createElement('option');
+                let option = document.createElement('option');
                 option.value = category.name;
-                option.text = category.name;
+                option.text = (category.name);
                 dropdown.add(option);
             });
             

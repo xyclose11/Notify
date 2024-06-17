@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NoteApp.Migrations
 {
     [DbContext(typeof(NoteDbContext))]
-    [Migration("20240613171838_UpdatedNoteCategory")]
-    partial class UpdatedNoteCategory
+    [Migration("20240617175415_CategoryAdd")]
+    partial class CategoryAdd
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,9 +47,12 @@ namespace NoteApp.Migrations
                     b.Property<string>("WhoCreated")
                         .HasColumnType("text");
 
+                    b.Property<bool>("isPublic")
+                        .HasColumnType("boolean");
+
                     b.HasKey("CategoryId");
 
-                    b.ToTable("NoteCategory", (string)null);
+                    b.ToTable("Category", (string)null);
                 });
 
             modelBuilder.Entity("NoteApp.Models.Note", b =>

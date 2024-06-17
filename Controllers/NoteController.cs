@@ -84,10 +84,7 @@ namespace NoteApp.Controllers
             note.IsOwnedBy = _userManager.GetUserId(User);
             note.CreatedAt = DateTime.UtcNow;
             note.UpdatedAt = DateTime.UtcNow;
-
-            note.Category.CreatedAt = DateTime.UtcNow;
-            note.Category.UpdatedAt = DateTime.UtcNow;
-            note.Category.WhoCreated = _userManager.GetUserId(User);
+            
             
             if (ModelState.IsValid)
             {
@@ -160,14 +157,13 @@ namespace NoteApp.Controllers
         }
 
          
-        public async Task<IActionResult> GetNotes(string view, int currentPage)
+        public async Task<IActionResult> GetNotes(string view, int currentPage, Category category)
         {
             var userId = _userManager.GetUserId(User);
             
             if (view == "Table")
             {
                 CurrentPage = currentPage > 0 ? currentPage : 1;
-
                 
                 var totalNotesForUser = await _context.Notes.Where(note => note.IsOwnedBy == userId).CountAsync();
 
@@ -177,6 +173,7 @@ namespace NoteApp.Controllers
                 ViewBag.TotalPages = TotalPages;
                 ViewBag.Categories = await _context.Categories.ToListAsync();
 
+                
                 var tableNotesQuery = _context.Notes
                     .Include(note => note.Category)
                     .Where(note => note.IsOwnedBy == userId)
@@ -275,6 +272,8 @@ namespace NoteApp.Controllers
             return RedirectToAction(nameof(Index));
 
         }
+
+
         
         
         

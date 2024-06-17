@@ -9,6 +9,7 @@ public class Category
     public string Name { get; set; }
     public string? Description { get; set; }
     public string? WhoCreated { get; set; }
+    public bool isPublic { get; set; } = false;
     
     [Required]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

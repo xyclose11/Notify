@@ -26,7 +26,7 @@ public class NoteDbContext : DbContext
 
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Note>().ToTable("Note");
-        modelBuilder.Entity<Category>().ToTable("NoteCategory");
+        modelBuilder.Entity<Category>().ToTable("Category");
     }
 }
 

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NoteApp.Helpers;
 using NoteApp.Models;
 
@@ -52,4 +53,9 @@ public class CategoryController: Controller
         return View(category);
     }
     
+    public async Task<IActionResult> GetCategories()
+    {
+        var categories = await _context.Categories.ToListAsync();
+        return Ok(categories);
+    }
 }

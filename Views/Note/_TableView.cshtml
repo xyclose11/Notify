@@ -2,13 +2,18 @@
 
 <div class="row justify-content-sm-center p-0 mb-2 mt-2" id="noteViewTableContainer">
 
+    <!-- Displays the categories -->
+    <label>Category</label>
+    <select class="form-select" aria-label="Category Selector" id="categoryDropdown">
+        <option></option>
+    </select>
+    
     <table class="table-bordered table-hover table-striped">
         <thead>
         <tr>
             <th scope="col">Select</th>
             <th scope="col">Title</th>
             <th scope="col">Body</th>
-            <th scope="col">Category</th>
             <th scope="col">Actions</th>
         </tr>
         </thead>
@@ -21,7 +26,6 @@
                 </td>
                 <td>@Html.DisplayFor(modelItem => note.Title)</td>
                 <td>@Html.DisplayFor(modelItem => note.Body)</td>
-                <td>@Html.DisplayFor(modelItem => note.Category.Name)<a asp-action="Create" asp-controller="Category">+</a></td>
                 <td>These are actions</td>
             </tr>
         }
@@ -121,4 +125,33 @@ $(document).ready(function() {
     // Append all the links to #noteViewPagination in the correct order
     $('#noteViewPagination').append(goToStartItem, previousListItem, leftLinks, currentLink, rightLinks, nextListItem, goToEndItem);
 });
+</script>
+
+<script>
+    $(document).ready(function () {
+        getCategories();
+    })
+
+    function getCategories() {
+        $.get('/Category/GetCategories', function (data) {
+            // Assuming the id of your dropdown list is 'categoryDropdown'
+            var dropdown = document.getElementById('categoryDropdown');
+
+            // Clear any existing options
+            dropdown.innerHTML = '';
+            var option = document.createElement('option');
+            option.value = "";
+            option.text = "";
+            dropdown.add(option);
+            // Add an option for each category
+            data.forEach(function(category) {
+                var option = document.createElement('option');
+                option.value = category.id;
+                option.text = category.name;
+                dropdown.add(option);
+            });
+
+
+        })
+    }
 </script>

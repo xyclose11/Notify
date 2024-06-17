@@ -44,9 +44,12 @@ namespace NoteApp.Migrations
                     b.Property<string>("WhoCreated")
                         .HasColumnType("text");
 
+                    b.Property<bool>("isPublic")
+                        .HasColumnType("boolean");
+
                     b.HasKey("CategoryId");
 
-                    b.ToTable("NoteCategory", (string)null);
+                    b.ToTable("Category", (string)null);
                 });
 
             modelBuilder.Entity("NoteApp.Models.Note", b =>

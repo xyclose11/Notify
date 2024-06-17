@@ -23,4 +23,7 @@ public class Note
     public Guid? CategoryId { get; set; }
     [ForeignKey("CategoryId")]
     public Category? Category { get; set; }
+
+    [Required]
+    public bool IsPublic { get; init; } = false;
 }

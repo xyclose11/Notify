@@ -23,6 +23,7 @@
             <th scope="col">Select</th>
             <th scope="col">Title</th>
             <th scope="col">Body</th>
+            <th scope="col">Tags</th>
             <th scope="col">Actions</th>
         </tr>
         </thead>
@@ -35,6 +36,12 @@
                 </td>
                 <td>@Html.DisplayFor(modelItem => note.Title)</td>
                 <td>@Html.DisplayFor(modelItem => note.Body)</td>
+                <td>
+                    @foreach (var noteTag in note.NoteTags)
+                    {
+                        <span>@Html.DisplayFor(modelItem => noteTag.Tag.Name)</span>
+                    }
+                </td>
                 <td>These are actions</td>
             </tr>
         }

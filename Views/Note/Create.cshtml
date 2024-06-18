@@ -24,7 +24,12 @@
         <div class="form-group">
             <label asp-for="CategoryId" class="control-label"></label>
             <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories"></select>
-            <a asp-action="Create" asp-controller="Category">+</a>
+            <a asp-action="Create" asp-controller="Category">Category +</a>
+        </div>
+        <div class="form-group">
+            <label asp-for="NoteTags" class="control-label"></label>
+            <select asp-for="NoteTags" name="selectedTags" class="form-control" asp-items="ViewBag.Tags" multiple></select>
+            <a asp-action="Create" asp-controller="Tag">Add Tag</a>
         </div>
 
         <div class="form-floating m-4">

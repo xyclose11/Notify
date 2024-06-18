@@ -8,7 +8,7 @@ public class Tag
     [Key]
     public Guid Id { get; init; } = Guid.NewGuid();
 
-    public List<Note> Notes { get; } = [];
+    public IList<NoteTag> NoteTags { get; set; } = new List<NoteTag>();
     
     private string _name;
 

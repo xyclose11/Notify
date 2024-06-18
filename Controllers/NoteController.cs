@@ -18,17 +18,19 @@ namespace NoteApp.Controllers
         private readonly NoteDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILogger<NoteController> _logger;
 
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; } = 1;
         public int ItemsPerPage { get; set; } = 10;
         public string SelectedCategory { get; set; } = null!;
         
-        public NoteController(NoteDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public NoteController(NoteDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, ILogger<NoteController> iLogger)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _logger = iLogger;
         }
 
         // GET: Note
@@ -74,28 +76,51 @@ namespace NoteApp.Controllers
         {
             // Pass all the categories to the view in a dropdown list
             ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name");
+            ViewBag.Tags = new SelectList(_context.Tags, "Id", "Name");
             return View();
         }
 
         // POST: Note/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Id,Title,Body,CategoryId")] Note note)
+        public IActionResult Create([Bind("Id,Title,Body,CategoryId,NoteTags")] Note note, List<Guid> selectedTags)
         {
             note.IsOwnedBy = _userManager.GetUserId(User);
             note.CreatedAt = DateTime.UtcNow;
             note.UpdatedAt = DateTime.UtcNow;
-            
-            
+
             if (ModelState.IsValid)
             {
+                // Check if selectedTags is null or empty
+                if (selectedTags == null || !selectedTags.Any())
+                {
+                    _logger.LogInformation("No tags were selected.");
+                }
+                else
+                {
+                    // Add any selected tags to note
+                    foreach (var Id in selectedTags)
+                    {
+                        var tag = _context.Tags.Find(Id);
+                        if (tag != null)
+                        {
+                            note.NoteTags.Add(new NoteTag { Note = note, Tag = tag});
+                        }
+                        else
+                        {
+                            _logger.LogInformation("No tag found with ID: {Id}", Id);
+                        }
+                    }
+                }
+
                 _context.Notes.Add(note);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
             // If the model state is not valid, repopulate the categories and return the view
             ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name");
-            
+            ViewBag.Tags = new SelectList(_context.Tags, "Id", "Name");
+
             return View(note);
         }
 
@@ -161,7 +186,7 @@ namespace NoteApp.Controllers
         public async Task<IActionResult> GetNotes(string view, string category, int currentPage)
         {
             var userId = _userManager.GetUserId(User);
-            Console.WriteLine(category);
+            
             if (view == "Table")
             {
                 CurrentPage = currentPage > 0 ? currentPage : 1;
@@ -179,6 +204,8 @@ namespace NoteApp.Controllers
 
                 var tableNotesQuery = _context.Notes
                     .Include(note => note.Category)
+                    .Include(note => note.NoteTags)
+                    .ThenInclude(nt => nt.Tag)
                     .Where(note => note.IsOwnedBy == userId);
 
                 if (!string.IsNullOrEmpty(category))

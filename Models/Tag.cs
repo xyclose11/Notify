@@ -26,7 +26,7 @@ public class Tag
     
     [Required] public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
     [Required] public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-    [Required] public string WasCreatedBy { get; init; }
+    [Required] public string? WasCreatedBy { get; set; }
     
     public string? Color { get; set; } = "#000000"; // Default color is black
     public int? NoteCount { get; set; } = 0; // Contains amount of notes associated with the tag

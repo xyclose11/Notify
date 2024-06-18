@@ -86,4 +86,25 @@ public class TagController: Controller
         
         return RedirectToAction("Index", "Note");
     }
+
+    [HttpPost]
+    public async Task<IActionResult> AddTagToNote(List<Guid> selectedTags, Guid noteId)
+    {
+        var note = await _context.Notes.FindAsync(noteId);
+        foreach (var Id in selectedTags)
+        {
+            var tag = await _context.Tags.FindAsync(Id);
+            if (tag != null)
+            {
+                tag.NoteTags.Add(new NoteTag{ Note = note, Tag = tag});
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                Console.WriteLine("THERE IS AN ERROR HERE.");
+            }
+        }
+        
+        return RedirectToAction("Index","Note");
+    }
 }

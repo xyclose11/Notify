@@ -76,7 +76,8 @@ namespace NoteApp.Controllers
         {
             // Pass all the categories to the view in a dropdown list
             ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name");
-            ViewBag.Tags = new SelectList(_context.Tags, "Id", "Name");
+            ViewBag.UserOwnedTags = new SelectList(_context.NoteTags
+                .Where(tag => tag.Tag.WasCreatedBy == _userManager.GetUserId(User)), "Id", "Name");
             return View();
         }
 
@@ -119,7 +120,8 @@ namespace NoteApp.Controllers
             }
             // If the model state is not valid, repopulate the categories and return the view
             ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name");
-            ViewBag.Tags = new SelectList(_context.Tags, "Id", "Name");
+            ViewBag.UserOwnedTags = new SelectList(_context.NoteTags
+                .Where(tag => tag.Tag.WasCreatedBy == _userManager.GetUserId(User)), "Id", "Name");
 
             return View(note);
         }
@@ -201,7 +203,10 @@ namespace NoteApp.Controllers
                 ViewBag.CurrentPage = CurrentPage;
                 ViewBag.TotalPages = TotalPages;
                 ViewBag.Categories = await _context.Categories.ToListAsync();
-
+                ViewBag.UserOwnedTags = await _context.Tags
+                    .Where(tag => tag.WasCreatedBy == userId)
+                    .ToListAsync();
+                
                 var tableNotesQuery = _context.Notes
                     .Include(note => note.Category)
                     .Include(note => note.NoteTags)

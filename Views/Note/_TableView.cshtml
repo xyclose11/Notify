@@ -43,7 +43,7 @@
                         <span class="badge rounded-pill text-black text-sm-center bg-primary">@Html.DisplayFor(modelItem => noteTag.Tag.Name)</span>
                     }
                     <!-- Add Tag to Note -->
-                    <button data-bs-target="#addTagModal" data-bs-toggle="modal" type="button" class="btn" asp-action="Create" asp-controller="Tag">
+                    <button data-bs-target="#addTagModal" data-bs-toggle="modal" type="button" class="btn" asp-action="Create" asp-controller="Tag" data-note-id="@note.Id">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
                             <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
                             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
@@ -57,7 +57,16 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-
+                                    <form action="/Tag/AddTagToNote" method="post">
+                                        <select name="selectedTags" multiple class="form-control">
+                                            @foreach (var tag in ViewBag.UserOwnedTags)
+                                            {
+                                                <option value="@tag.Id">@tag.Name</option>
+                                            }
+                                        </select>
+                                        <input name="noteId" type="hidden" id="hiddenNoteId" value="@note.Id"/>
+                                        <button type="submit">Save</button>
+                                    </form>
                                 </div>
                                 <div class="modal-footer">
                                     <a class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#createTagCollapse">
@@ -224,5 +233,14 @@ $(document).ready(function() {
         // When the selected category changes, store the new value in localStorage
         localStorage.setItem('selectedCategory', this.value);
         location.reload();
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('button[data-bs-target="#addTagModal"]').click(function() {
+            var noteId = $(this).data('note-id');
+            $('#hiddenNoteId').val(noteId); // This will set the NoteId as the value of the hidden input field
+        });
     });
 </script>

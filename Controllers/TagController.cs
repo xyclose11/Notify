@@ -23,8 +23,38 @@ public class TagController: Controller
         return View();
     }
     
+    // [HttpPost]
+    // public IActionResult Create(Tag tag)
+    // {
+    //     ModelState.Remove("WasCreatedBy");
+    //     if (!ModelState.IsValid)
+    //     {
+    //         var errors = ModelState
+    //             .Where(x => x.Value.Errors.Count > 0)
+    //             .Select(x => new { x.Key, x.Value.Errors })
+    //             .ToArray();
+    //
+    //         foreach (var error in errors)
+    //         {
+    //             Console.WriteLine($"Key: {error.Key}");
+    //             foreach (var modelError in error.Errors)
+    //             {
+    //                 Console.WriteLine($"Error: {modelError.ErrorMessage}");
+    //             }
+    //         }
+    //     }
+    //
+    //     if (!ModelState.IsValid) return View(tag);
+    //     tag.WasCreatedBy = _userManager.GetUserId(User);
+    //     _context.Tags.Add(tag);
+    //     _context.SaveChanges();
+    //         
+    //     // Redirect to previous page
+    //     return RedirectToAction("Index", "Note");
+    // }
+
     [HttpPost]
-    public IActionResult Create(Tag tag)
+    public async Task<IActionResult> Create(string Name, string Description)
     {
         ModelState.Remove("WasCreatedBy");
         if (!ModelState.IsValid)
@@ -43,13 +73,17 @@ public class TagController: Controller
                 }
             }
         }
-
-        if (!ModelState.IsValid) return View(tag);
-        tag.WasCreatedBy = _userManager.GetUserId(User);
+        
+        
+        var tag = new Tag
+        {
+            Name = Name,
+            Description = Description,
+            WasCreatedBy = _userManager.GetUserId(User)
+        };
         _context.Tags.Add(tag);
-        _context.SaveChanges();
-            
-        // Redirect to previous page
+        await _context.SaveChangesAsync();
+        
         return RedirectToAction("Index", "Note");
     }
 }

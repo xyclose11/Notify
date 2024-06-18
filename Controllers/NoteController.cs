@@ -22,7 +22,7 @@ namespace NoteApp.Controllers
 
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; } = 1;
-        public int ItemsPerPage { get; set; } = 10;
+        public int ItemsPerPage { get; set; } = 20;
         public string SelectedCategory { get; set; } = null!;
         
         public NoteController(NoteDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, ILogger<NoteController> iLogger)

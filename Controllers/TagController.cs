@@ -83,39 +83,11 @@ public class TagController: Controller
         };
         _context.Tags.Add(tag);
         await _context.SaveChangesAsync();
+
+        ViewData["success"] = "success";
         
         return RedirectToAction("Index", "Note");
     }
 
-    [HttpPost]
-    public async Task<IActionResult> AddTagToNote(List<Guid> selectedTags, Guid noteId)
-    {
-        var note = await _context.Notes.FindAsync(noteId);
-
-        if (note == null)
-        {
-            return NotFound();
-        }
-        foreach (var Id in selectedTags)
-        {
-            var tag = await _context.Tags.FindAsync(Id);
-            if (tag == null)
-            {
-                ModelState.AddModelError("Name", "Tag Name not found.");
-            }
-
-            if (note.NoteTags.All(nt => nt.TagId != Id))
-            {
-                tag.NoteTags.Add(new NoteTag{ Note = note, Tag = tag});
-            }
-            else
-            {
-                ModelState.AddModelError("Name", "Tag already exists.");
-            }
-        }
-        await _context.SaveChangesAsync();
-        
-        
-        return RedirectToAction("Index","Note");
-    }
+    
 }

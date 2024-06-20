@@ -13,10 +13,22 @@
             
         </div>
     </div>
-        
-    
 
-    
+
+
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div id="TagSuccessAlert" class="alert alert-success alert-dismissible">@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div id="TagErrorAlert" class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
     <table class="table-bordered table-hover table-striped">
         <thead>
         <tr>
@@ -69,7 +81,7 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="/Tag/AddTagToNote" method="post">
+                                    <form action="/Note/AddTagToNote" method="post">
      
                                         <select name="selectedTags" multiple class="form-control" size="8">
                                             
@@ -119,6 +131,7 @@
         }
         </tbody>
     </table>
+
 
     <!-- Pagination -->
     <nav aria-label="Pagination">
@@ -265,4 +278,22 @@ $(document).ready(function() {
             $('#hiddenNoteId-' + noteId).val(noteId); // This will set the NoteId as the value of the hidden input field
         });
     });
+    
+    // Hide success alert after 3 seconds
+    $(document).ready(function () {
+        if ($('#TagSuccessAlert').length) {
+            setTimeout(function () {
+                $('#TagSuccessAlert').fadeOut('slow');
+            }, 2000)
+        }
+    })
+    
+    // Hide success alert after 3 seconds
+    $(document).ready(function () {
+        if ($('#TagErrorAlert').length) {
+            setTimeout(function () {
+                $('#TagErrorAlert').fadeOut('slow');
+            }, 6000)
+        }
+    })
 </script>

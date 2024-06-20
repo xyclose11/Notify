@@ -333,7 +333,40 @@ namespace NoteApp.Controllers
 
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddTagToNote(List<Guid> selectedTags, Guid noteId)
+        {
+            var note = await _context.Notes.FindAsync(noteId);
 
+            if (note == null)
+            {
+                return NotFound();
+            }
+            foreach (var Id in selectedTags)
+            {
+                var tag = await _context.Tags.FindAsync(Id);
+                if (tag == null)
+                {
+                    TempData["ErrorMessage"] = $"{tag.Name} Was not found.";           
+                    ModelState.AddModelError("Name", "Tag Name not found.");
+                }
+
+                if (note.NoteTags.All(nt => nt.TagId != Id))
+                {
+                    tag.NoteTags.Add(new NoteTag{ Note = note, Tag = tag});
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = $"{tag.Name} Already Exists.";           
+
+                    ModelState.AddModelError("Name", "Tag already exists.");
+                }
+            }
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Tag(s) added to {note.Title} successfully";           
+            return RedirectToAction("Index");
+        }
         
         
         

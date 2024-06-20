@@ -188,6 +188,7 @@ namespace NoteApp.Controllers
         public async Task<IActionResult> GetNotes(string view, string category, int currentPage)
         {
             var userId = _userManager.GetUserId(User);
+            var noteViewModels = new List<NoteViewModel>();
             
             if (view == "Table")
             {
@@ -203,9 +204,7 @@ namespace NoteApp.Controllers
                 ViewBag.CurrentPage = CurrentPage;
                 ViewBag.TotalPages = TotalPages;
                 ViewBag.Categories = await _context.Categories.ToListAsync();
-                ViewBag.UserOwnedTags = await _context.Tags
-                    .Where(tag => tag.WasCreatedBy == userId)
-                    .ToListAsync();
+                
                 
                 var tableNotesQuery = _context.Notes
                     .Include(note => note.Category)
@@ -218,13 +217,33 @@ namespace NoteApp.Controllers
                     tableNotesQuery = tableNotesQuery.Where(note => note.Category.Name == category);
                 }
 
-                
+                // Pagination
                 var tableNotes = await tableNotesQuery
                     .Skip((CurrentPage - 1) * ItemsPerPage)
                     .Take(ItemsPerPage)
                     .ToListAsync();
 
-                return PartialView("_TableView", tableNotes);
+                // Displays applied tags only
+                foreach (var note in tableNotes)
+                {
+                    var appliedTags = note.NoteTags.Select(nt => nt.Tag).ToList();
+                    
+                    var userOwnedTags = await _context.Tags
+                        .Where(tag => tag.WasCreatedBy == userId)
+                        .ToListAsync();
+
+                    var unAppliedOwnedTags = userOwnedTags
+                        .Where(tag => !appliedTags.Contains(tag))
+                        .ToList();
+                    
+                    Console.WriteLine(userOwnedTags.Count);
+                    Console.WriteLine(unAppliedOwnedTags.Count);
+                        
+                    noteViewModels.Add(new NoteViewModel { Note = note, UserOwnedTags = userOwnedTags, NonAppliedTags = unAppliedOwnedTags});
+                }
+                
+
+                return PartialView("_TableView", noteViewModels);
             }
 
             

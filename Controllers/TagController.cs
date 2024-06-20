@@ -91,19 +91,30 @@ public class TagController: Controller
     public async Task<IActionResult> AddTagToNote(List<Guid> selectedTags, Guid noteId)
     {
         var note = await _context.Notes.FindAsync(noteId);
+
+        if (note == null)
+        {
+            return NotFound();
+        }
         foreach (var Id in selectedTags)
         {
             var tag = await _context.Tags.FindAsync(Id);
-            if (tag != null)
+            if (tag == null)
+            {
+                ModelState.AddModelError("Name", "Tag Name not found.");
+            }
+
+            if (note.NoteTags.All(nt => nt.TagId != Id))
             {
                 tag.NoteTags.Add(new NoteTag{ Note = note, Tag = tag});
-                await _context.SaveChangesAsync();
             }
             else
             {
-                Console.WriteLine("THERE IS AN ERROR HERE.");
+                ModelState.AddModelError("Name", "Tag already exists.");
             }
         }
+        await _context.SaveChangesAsync();
+        
         
         return RedirectToAction("Index","Note");
     }

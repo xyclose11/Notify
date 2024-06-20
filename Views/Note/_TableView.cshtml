@@ -49,17 +49,36 @@
                 <td>@Html.DisplayFor(modelItem => noteViewModel.Note.Title)</td>
                 <td>@noteViewModel.Note.Body</td>
                 <td>
-                        
-                    @foreach (var tag in noteViewModel.Note.NoteTags)
-                    {
-                        <div class="btn-group btn-group-sm" role="group" aria-label="Tag Controls">
-                            <button type="button" class="btn btn-primary pt-0 pb-0">@tag.Tag.Name</button>
-                            <button type="button" class="btn btn-secondary pt-0 pb-0">
-X
-                            </button>
+                    <div class="container text-center">
+                        <div class="row">
                             
+                        @foreach (var tag in noteViewModel.Note.NoteTags)
+                        {
+                            <div class="col-sm-auto p-0">
+                                
+                                <div class="btn-group btn-group-sm m-1" role="group" aria-label="Tag Controls">
+                                    <button type="button" class="btn btn-primary pt-0 pb-0">@tag.Tag.Name</button>
+                                    <form action="/Note/RemoveTagFromNote" method="post">
+                                        <div>
+                                            <button type="submit" class="btn pe-1 ps-1 btn-secondary" style="border-top-left-radius: 0; border-bottom-left-radius: 0; flex-grow: 1;">
+                                                X
+                                            </button>
+                                            <input name="noteId" type="hidden" id="hiddenNoteId" value="@noteViewModel.Note.Id"/>
+                                            <input name="selectedTagId" type="hidden" id="hiddenSelectedTag" value="@tag.TagId"/>
+
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+
+                            }
+
                         </div>
-                    }
+
+                    </div>
+
                     <!-- Add Tag to Note -->
                     @if (noteViewModel.NonAppliedTags.Count != 0)
                     {

@@ -89,5 +89,33 @@ public class TagController: Controller
         return RedirectToAction("Index", "Note");
     }
 
+    [HttpPost]
+    public async Task<IActionResult> Delete(Guid tagId)
+    {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .Select(x => new { x.Key, x.Value.Errors })
+                .ToArray();
+            
+            foreach (var error in errors)
+            {
+                Console.WriteLine($"Key: {error.Key}");
+                foreach (var modelError in error.Errors)
+                {
+                    Console.WriteLine($"Error: {modelError.ErrorMessage}");
+                }
+            }
+        }
+
+        var tag = await _context.Tags.FindAsync(tagId);
+
+        _context.Tags.Remove(tag);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Index", "Note");
+    }
+
     
 }

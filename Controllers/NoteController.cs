@@ -367,8 +367,34 @@ namespace NoteApp.Controllers
             TempData["SuccessMessage"] = $"Tag(s) added to {note.Title} successfully";           
             return RedirectToAction("Index");
         }
+        [HttpPost]
+        public async Task<IActionResult> RemoveTagFromNote(Guid selectedTagId, Guid noteId)
+        {
+
+            var noteTag = await _context.NoteTags
+                .Where(nt => nt.NoteId == noteId && nt.TagId == selectedTagId)
+                .FirstOrDefaultAsync();
+
+            if (noteTag != null)
+            {
+                _context.NoteTags.Remove(noteTag);
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "ERROR: NoteTag is null.";           
+                ModelState.AddModelError("Name", "Tag already exists.");
+            }
+
+
+            
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Tag(s) removed successfully";           
+            return RedirectToAction("Index");
+        }
         
         
         
     }
+    
 }

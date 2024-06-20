@@ -52,7 +52,13 @@
                         
                     @foreach (var tag in noteViewModel.Note.NoteTags)
                     {
-                        <span class="badge rounded-pill text-black text-sm-center bg-primary">@tag.Tag.Name</span>
+                        <div class="btn-group btn-group-sm" role="group" aria-label="Tag Controls">
+                            <button type="button" class="btn btn-primary pt-0 pb-0">@tag.Tag.Name</button>
+                            <button type="button" class="btn btn-secondary pt-0 pb-0">
+X
+                            </button>
+                            
+                        </div>
                     }
                     <!-- Add Tag to Note -->
                     @if (noteViewModel.NonAppliedTags.Count != 0)

@@ -354,6 +354,9 @@ namespace NoteApp.Controllers
                 if (note.NoteTags.All(nt => nt.TagId != Id))
                 {
                     tag.NoteTags.Add(new NoteTag{ Note = note, Tag = tag});
+                    
+                    // Update tag noteCount by 1
+                    tag.NoteCount += 1;
                 }
                 else
                 {
@@ -378,6 +381,14 @@ namespace NoteApp.Controllers
             if (noteTag != null)
             {
                 _context.NoteTags.Remove(noteTag);
+                
+                // Decrement Tag NoteCount field by 1
+                var tag = await _context.Tags.FindAsync(selectedTagId);
+                if (tag is { NoteCount: >= 1 })
+                {
+                    // Decrease the NoteCount by 1
+                    tag.NoteCount -= 1;
+                }
             }
             else
             {
@@ -385,7 +396,7 @@ namespace NoteApp.Controllers
                 ModelState.AddModelError("Name", "Tag already exists.");
             }
 
-
+            
             
             await _context.SaveChangesAsync();
 

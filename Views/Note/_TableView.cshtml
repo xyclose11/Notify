@@ -94,25 +94,10 @@
                                                         <input class="form-control" type="text" placeholder="@tag.Tag.Description" id="newTagDescription" name="description"/>
 
                                                     </div>
-
-                                                    <div class="input-group mb-2">
-                                                        <span class="input-group-text" for="newTagColor">Color:</span>
-                                                        <input class="form-control" type="text" placeholder="@tag.Tag.Color" id="newTagColor" name="color"/>
-
-                                                    </div>
                                                     
                                                     <div class="input-group mb-2">
                                                         <label for="tagColorInput" class="form-label me-2">Color</label>
-                                                        <input type="color" class="form-control form-control-color" id="tagColorInput" value="#563d7c" title="Alter Tag Color">
-                                                    </div>
-                                                    
-                                                    <div class="input-group mb-2">
-                                                        <div class="form-check">
-                                                            <input type="checkbox" class="form-check-input"/>
-                                                            <label class="form-check-label" for="flexCheckChecked">
-                                                                Public?
-                                                            </label>
-                                                        </div>
+                                                        <input type="color" class="form-control form-control-color" id="tagColorInput" name="color" value="@tag.Tag.Color" title="Alter Tag Color">
                                                     </div>
 
                                                     <input class="form-floating" type="hidden" placeholder="TagId" id="tagId" name="tagId" value="@tag.TagId"/>

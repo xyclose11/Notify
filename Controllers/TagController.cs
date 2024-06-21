@@ -124,6 +124,7 @@ public class TagController: Controller
         Console.WriteLine(name);
         Console.WriteLine(description);
         Console.WriteLine(color);
+        
         if (!ModelState.IsValid)
         {
             var errors = ModelState

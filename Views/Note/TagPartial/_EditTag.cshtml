@@ -1,0 +1,36 @@
+@model IEnumerable<NoteApp.Models.ViewModels.Notes.NoteViewModel>
+
+<div class="modal fade" >
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h1>Edit Tag</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <form action="Tag/Edit/" method="post">
+                    @Model.
+                    <div class="form-control">
+                        <input class="form-floating" type="text" placeholder="Name" id="newTagName" name="name"/>
+                        <input class="form-floating" type="text" placeholder="Description" id="newTagDescription" name="description"/>
+                        <input class="form-floating" type="text" placeholder="Color" id="newTagColor" name="color"/>
+                        <button type="submit" aria-label="Edit Tag Button" class="btn btn-success btn-outline-info">Save Changes</button>
+                    </div>
+                </form>                
+
+            </div>
+
+            <div class="modal-footer">
+                <form action="Tag/Delete/" method="post">
+                    <div>
+                        <button type="submit" aria-label="Delete Tag Button" class="btn btn-danger btn-outline-danger">Delete</button>
+                    </div>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</div>

@@ -117,5 +117,45 @@ public class TagController: Controller
         return RedirectToAction("Index", "Note");
     }
 
+    [HttpPost]
+    public async Task<IActionResult> Edit(Guid tagId, string name, string description, string color)
+    {
+        Console.WriteLine(tagId);
+        Console.WriteLine(name);
+        Console.WriteLine(description);
+        Console.WriteLine(color);
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .Select(x => new { x.Key, x.Value.Errors })
+                .ToArray();
+            
+            foreach (var error in errors)
+            {
+                Console.WriteLine($"Key: {error.Key}");
+                foreach (var modelError in error.Errors)
+                {
+                    Console.WriteLine($"Error: {modelError.ErrorMessage}");
+                }
+            }
+        }
+
+        var tag = await _context.Tags.FindAsync(tagId);
+
+        if (tag != null)
+        {
+            // Update tag
+            tag.Name = name;
+            tag.Description = description;
+            tag.Color = color;
+            
+        }
+        
+        _context.Tags.Update(tag);
+        await _context.SaveChangesAsync();
+        
+        return RedirectToAction("Index", "Note");
+    }
     
 }

@@ -22,39 +22,9 @@ public class TagController: Controller
     {
         return View();
     }
-    
-    // [HttpPost]
-    // public IActionResult Create(Tag tag)
-    // {
-    //     ModelState.Remove("WasCreatedBy");
-    //     if (!ModelState.IsValid)
-    //     {
-    //         var errors = ModelState
-    //             .Where(x => x.Value.Errors.Count > 0)
-    //             .Select(x => new { x.Key, x.Value.Errors })
-    //             .ToArray();
-    //
-    //         foreach (var error in errors)
-    //         {
-    //             Console.WriteLine($"Key: {error.Key}");
-    //             foreach (var modelError in error.Errors)
-    //             {
-    //                 Console.WriteLine($"Error: {modelError.ErrorMessage}");
-    //             }
-    //         }
-    //     }
-    //
-    //     if (!ModelState.IsValid) return View(tag);
-    //     tag.WasCreatedBy = _userManager.GetUserId(User);
-    //     _context.Tags.Add(tag);
-    //     _context.SaveChanges();
-    //         
-    //     // Redirect to previous page
-    //     return RedirectToAction("Index", "Note");
-    // }
 
     [HttpPost]
-    public async Task<IActionResult> Create(string Name, string Description)
+    public async Task<IActionResult> Create(string Name, string Description, string Color)
     {
         ModelState.Remove("WasCreatedBy");
         if (!ModelState.IsValid)
@@ -79,13 +49,14 @@ public class TagController: Controller
         {
             Name = Name,
             Description = Description,
+            Color = Color,
             WasCreatedBy = _userManager.GetUserId(User)
         };
         _context.Tags.Add(tag);
         await _context.SaveChangesAsync();
 
-        ViewData["success"] = "success";
-        
+        TempData["SuccessMessage"] = $"Tag: <strong> {tag.Name} </strong> created successfully!";
+
         return RedirectToAction("Index", "Note");
     }
 
@@ -113,6 +84,8 @@ public class TagController: Controller
 
         _context.Tags.Remove(tag);
         await _context.SaveChangesAsync();
+        
+        TempData["SuccessMessage"] = $"Tag: <strong> {tag.Name} </strong> deleted successfully!";
 
         return RedirectToAction("Index", "Note");
     }
@@ -120,10 +93,6 @@ public class TagController: Controller
     [HttpPost]
     public async Task<IActionResult> Edit(Guid tagId, string name, string description, string color)
     {
-        Console.WriteLine(tagId);
-        Console.WriteLine(name);
-        Console.WriteLine(description);
-        Console.WriteLine(color);
         
         if (!ModelState.IsValid)
         {
@@ -150,12 +119,13 @@ public class TagController: Controller
             tag.Name = name;
             tag.Description = description;
             tag.Color = color;
-            
+            tag.UpdatedAt = DateTime.UtcNow;
         }
         
         _context.Tags.Update(tag);
         await _context.SaveChangesAsync();
-        
+
+        TempData["SuccessMessage"] = $"Changes on tag: <strong> {tag.Name} </strong> saved successfully!";
         return RedirectToAction("Index", "Note");
     }
     

@@ -389,6 +389,9 @@ namespace NoteApp.Controllers
                     // Decrease the NoteCount by 1
                     tag.NoteCount -= 1;
                 }
+                
+                TempData["SuccessMessage"] = $"Tag(s): <strong> {tag.Name} </strong> removed successfully";           
+
             }
             else
             {
@@ -400,7 +403,6 @@ namespace NoteApp.Controllers
             
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = $"Tag(s) removed successfully";           
             return RedirectToAction("Index");
         }
         

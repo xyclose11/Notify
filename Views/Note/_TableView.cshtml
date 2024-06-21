@@ -57,7 +57,7 @@
                             <div class="col-sm-auto p-0">
                                 
                                 <div class="btn-group btn-group-sm m-1" role="group" aria-label="Tag Controls">
-                                    <button data-bs-target="#editTagModal-@noteViewModel.Note.Id" type="button" class="btn btn-primary pt-0 pb-0" data-bs-toggle="modal" type="button" class="btn" asp-action="Edit" asp-controller="Tag" data-tag-id="@tag.TagId">@tag.Tag.Name</button>
+                                    <button data-bs-target="#editTagModal-@noteViewModel.Note.Id" type="button" class="btn pt-0 pb-0" data-bs-toggle="modal" type="button" style="background-color: @tag.Tag.Color;" asp-action="Edit" asp-controller="Tag" data-tag-id="@tag.TagId">@tag.Tag.Name</button>
                                                                        
                                     <form action="/Note/RemoveTagFromNote" method="post">
                                         <div>
@@ -86,7 +86,7 @@
                                             <form action="Tag/Edit/" method="post">
                                                     <div class="input-group mb-2">
                                                         <span class="input-group-text" for="newTagName">Name</span>
-                                                        <input class="form-control" type="text" placeholder="@tag.Tag.Name" id="newTagName" name="name"/>
+                                                        <input class="form-control" type="text" placeholder="@tag.Tag.Name" id="newTagName" name="name" required/>
                                                     </div>
 
                                                     <div class="input-group mb-2">
@@ -192,7 +192,7 @@
                                             
                                             <div class="input-group mb-2">
                                                 <label for="tagColorCreate" class="form-label me-2">Color</label>
-                                                <input type="color" class="form-control form-control-color" id="tagColorCreate" name="Color" value="#000000" title="Create Tag Color">
+                                                <input type="color" class="form-control form-control-color" id="tagColorCreate" name="Color" value="#4dccc5" title="Create Tag Color">
                                             </div>
                                             
                                             <div class="form-floating mt-2 text-end">

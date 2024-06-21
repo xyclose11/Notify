@@ -114,8 +114,7 @@
                                             @tag.Tag.NoteCount
                                             <form action="Tag/Delete/" method="post">
                                                 <div>
-                                                    <button type="submit" aria-label="Delete Tag Button" class="btn btn-danger">Delete</button>
-
+                                                    <button type="submit" aria-label="Delete Tag Button" onclick="return confirm('Are you sure you want to delete this?')" class="btn btn-danger">Delete</button>
                                                     <input name="tagId" type="hidden" id="hiddenTagIdDelete" value="@tag.TagId"/>
                                                 </div>
                                             </form>

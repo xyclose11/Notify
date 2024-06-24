@@ -241,53 +241,7 @@ namespace NoteApp.Controllers
 
             if (view == "Table")
             {
-                CurrentPage = currentPage > 0 ? currentPage : 1;
-                SelectedCategory = category;
-                var totalNotesForUser = await _context.Notes
-                    .Where(note => note.IsOwnedBy == userId)
-                    .Where(note => note.Category.Name == SelectedCategory)
-                    .CountAsync();
-
-                TotalPages = (int)Math.Ceiling(totalNotesForUser / (double)ItemsPerPage);
-
-                ViewBag.CurrentPage = CurrentPage;
-                ViewBag.TotalPages = TotalPages;
-                ViewBag.Categories = await _context.Categories.ToListAsync();
                 
-                
-                var tableNotesQuery = _context.Notes
-                    .Include(note => note.Category)
-                    .Include(note => note.NoteTags)
-                    .ThenInclude(nt => nt.Tag)
-                    .Where(note => note.IsOwnedBy == userId);
-
-                if (!string.IsNullOrEmpty(category))
-                {
-                    tableNotesQuery = tableNotesQuery.Where(note => note.Category.Name == category);
-                }
-
-                // Pagination
-                var tableNotes = await tableNotesQuery
-                    .Skip((CurrentPage - 1) * ItemsPerPage)
-                    .Take(ItemsPerPage)
-                    .ToListAsync();
-
-                // Displays applied tags only
-                foreach (var note in tableNotes)
-                {
-                    var appliedTags = note.NoteTags.Select(nt => nt.Tag).ToList();
-                    
-                    var userOwnedTags = await _context.Tags
-                        .Where(tag => tag.WasCreatedBy == userId)
-                        .ToListAsync();
-
-                    var unAppliedOwnedTags = userOwnedTags
-                        .Where(tag => !appliedTags.Contains(tag))
-                        .ToList();
-                    
-                    
-                    //noteTagViewModels.Add(new NoteViewModel { Note = note, UserOwnedTags = userOwnedTags, NonAppliedTags = unAppliedOwnedTags});
-                }
                 var noteTagViewModels = new NoteTagViewModel
                 {
                     NoteViewModels = GetNoteViewModels(userId, category),

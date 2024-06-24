@@ -184,12 +184,61 @@ namespace NoteApp.Controllers
             }
         }
 
+        private IEnumerable<NoteViewModel> GetNoteViewModels(string userId, string category)
+        {
+            // Get notes from DB
+            var tableNotesQuery = _context.Notes
+                .Include(note => note.Category)
+                .Include(note => note.NoteTags)
+                .ThenInclude(nt => nt.Tag)
+                .Where(note => note.IsOwnedBy == userId);
+
+            if (!string.IsNullOrEmpty(category))
+            {
+                tableNotesQuery = tableNotesQuery.Where(note => note.Category.Name == category);
+            }
+
+            // Pagination
+            var tableNotes = tableNotesQuery
+                .Skip((CurrentPage - 1) * ItemsPerPage)
+                .Take(ItemsPerPage)
+                .ToList();
+            
+            // Map the notes to NoteViewModels
+            var noteViewModels = tableNotes.Select(note =>
+            {
+                // Get the tags created by the owner of the note
+                var userOwnedTags = _context.Tags.Where(tag => tag.WasCreatedBy == note.IsOwnedBy).ToList();
+
+                // Get the tags that are not already applied to the note
+                var nonAppliedTags = userOwnedTags.Where(tag => !note.NoteTags.Select(nt => nt.TagId).Contains(tag.Id)).ToList();
+
+                return new NoteViewModel
+                {
+                    Note = note,
+                    UserOwnedTags = userOwnedTags,
+                    NonAppliedTags = nonAppliedTags
+                };
+            });
+
+            return noteViewModels;
+        }
+        
+        private IEnumerable<Tag> GetUserOwnedTags(string userId)
+        {
+            // Get the tags from the database
+            var tags = _context.Tags
+                .Where(tag => tag.WasCreatedBy == userId)
+                .ToList();
+
+            return tags;
+        }
          
         public async Task<IActionResult> GetNotes(string view, string category, int currentPage)
         {
             var userId = _userManager.GetUserId(User);
-            var noteViewModels = new List<NoteViewModel>();
-            
+            // var noteViewModels = new List<NoteViewModel>();
+
             if (view == "Table")
             {
                 CurrentPage = currentPage > 0 ? currentPage : 1;
@@ -236,14 +285,16 @@ namespace NoteApp.Controllers
                         .Where(tag => !appliedTags.Contains(tag))
                         .ToList();
                     
-                    Console.WriteLine(userOwnedTags.Count);
-                    Console.WriteLine(unAppliedOwnedTags.Count);
-                        
-                    noteViewModels.Add(new NoteViewModel { Note = note, UserOwnedTags = userOwnedTags, NonAppliedTags = unAppliedOwnedTags});
+                    
+                    //noteTagViewModels.Add(new NoteViewModel { Note = note, UserOwnedTags = userOwnedTags, NonAppliedTags = unAppliedOwnedTags});
                 }
-                
+                var noteTagViewModels = new NoteTagViewModel
+                {
+                    NoteViewModels = GetNoteViewModels(userId, category),
+                    Tags = GetUserOwnedTags(userId)
+                };
 
-                return PartialView("_TableView", noteViewModels);
+                return PartialView("_TableView", noteTagViewModels);
             }
 
             

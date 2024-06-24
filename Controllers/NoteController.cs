@@ -184,8 +184,9 @@ namespace NoteApp.Controllers
             }
         }
 
-        private IEnumerable<NoteViewModel> GetNoteViewModels(string userId, string category)
+        private IEnumerable<NoteViewModel> GetNoteViewModels(string userId, string category, int currentPage)
         {
+
             // Get notes from DB
             var tableNotesQuery = _context.Notes
                 .Include(note => note.Category)
@@ -241,10 +242,22 @@ namespace NoteApp.Controllers
 
             if (view == "Table")
             {
-                
+                CurrentPage = currentPage > 0 ? currentPage : 1;
+                SelectedCategory = category;
+                var totalNotesForUser = await _context.Notes
+                    .Where(note => note.IsOwnedBy == userId)
+                    .Where(note => note.Category.Name == SelectedCategory)
+                    .CountAsync();
+
+                TotalPages = (int)Math.Ceiling(totalNotesForUser / (double)ItemsPerPage);
+
+                ViewBag.CurrentPage = CurrentPage;
+                ViewBag.TotalPages = TotalPages;
+                ViewBag.Categories = await _context.Categories.ToListAsync();
+     
                 var noteTagViewModels = new NoteTagViewModel
                 {
-                    NoteViewModels = GetNoteViewModels(userId, category),
+                    NoteViewModels = GetNoteViewModels(userId, category, currentPage),
                     Tags = GetUserOwnedTags(userId)
                 };
 

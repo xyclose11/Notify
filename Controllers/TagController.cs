@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,24 +27,23 @@ public class TagController: Controller
     [HttpPost]
     public async Task<IActionResult> Create(string Name, string Description, string Color)
     {
+        // Removed from the ModelState since it is required on the DB side but cannot be added until after it is created
         ModelState.Remove("WasCreatedBy");
-        if (!ModelState.IsValid)
-        {
-            var errors = ModelState
-                .Where(x => x.Value.Errors.Count > 0)
-                .Select(x => new { x.Key, x.Value.Errors })
-                .ToArray();
-
-            foreach (var error in errors)
-            {
-                Console.WriteLine($"Key: {error.Key}");
-                foreach (var modelError in error.Errors)
-                {
-                    Console.WriteLine($"Error: {modelError.ErrorMessage}");
-                }
-            }
-        }
         
+        // SSValidation
+        if (string.IsNullOrEmpty(Name) || Name.Length > 128)
+        {
+            ModelState.AddModelError(nameof(Name), "Name is required and/or must be under 128 characters.");
+            return RedirectToAction("Index", "Note");
+        }
+        if (Description.Length > 256)
+        {
+            ModelState.AddModelError("Description", "Description length must be under 128 characters.");
+        }
+        if (string.IsNullOrEmpty(Color) || !Regex.IsMatch(Color, "^#(?:[0-9a-fA-F]{3}){1,2}$"))
+        {
+            ModelState.AddModelError("Color", "Color is required and/or must be a valid hex color.");
+        }
         
         var tag = new Tag
         {

@@ -1,4 +1,6 @@
+@using Microsoft.AspNetCore.Identity
 @model NoteApp.Models.Note
+@inject UserManager<User> UserManager
 
 <div class="justify-content-sm-center m-2">
     <h1 class="text-black text-center m-2">Create New Note</h1>
@@ -16,10 +18,19 @@
         
         @*Body*@
         <div class="form-floating m-4">
-            @Html.TextAreaFor(model => model.Body, new { @style = "red", @class="form-control" ,rows=3})
+            @Html.TextAreaFor(model => model.Body, new { @class="form-control" ,rows=3})
             @Html.LabelFor(model => model.Body)
         </div>
-
+        <div class="form-group">
+            <label asp-for="CategoryId" class="control-label"></label>
+            <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories"></select>
+            <a asp-action="Create" asp-controller="Category">Category +</a>
+        </div>
+        <div class="form-group">
+            <label asp-for="NoteTags" class="control-label"></label>
+            <select asp-for="NoteTags" name="selectedTags" class="form-control" asp-items="ViewBag.Tags" multiple></select>
+            <a asp-action="Create" asp-controller="Tag">Add Tag</a>
+        </div>
 
         <div class="form-floating m-4">
             <button type="submit" class="btn btn-success" value="Save">Create</button>

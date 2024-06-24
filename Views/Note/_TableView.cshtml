@@ -1,6 +1,33 @@
-@model IEnumerable<NoteApp.Models.Note>
+@model IEnumerable<NoteApp.Models.ViewModels.Notes.NoteViewModel>
 
-<div class="row justify-content-sm-center mb-2 mt-2" id="noteViewTableContainer">
+<div class="row justify-content-sm-center p-0 mb-2 mt-2" id="noteViewTableContainer">
+
+    <!-- Displays the categories -->
+
+    <div class="dropdown-align-right p-0">
+        <div class="form-floating mb-3 p-0">
+            <select class="form-select" aria-label="Category Selector" id="categoryDropdown">
+                <option></option>
+            </select>
+            <label for="categoryDropdown">Category</label>
+            
+        </div>
+    </div>
+
+
+
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div id="TagSuccessAlert" class="alert alert-success alert-dismissible">@Html.Raw(@TempData["SuccessMessage"]) 
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div id="TagErrorAlert" class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
 
     <table class="table-bordered table-hover table-striped">
         <thead>
@@ -8,38 +35,345 @@
             <th scope="col">Select</th>
             <th scope="col">Title</th>
             <th scope="col">Body</th>
+            <th scope="col">Tags</th>
             <th scope="col">Actions</th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var note in Model)
+        @foreach (var noteViewModel in Model)
         {
             <tr>
                 <td>
                     <input class="form-check-input" value="" type="checkbox"/>
                 </td>
-                <td>@Html.DisplayFor(modelItem => note.Title)</td>
-                <td>@Html.DisplayFor(modelItem => note.Body)</td>
+                <td>@Html.DisplayFor(modelItem => noteViewModel.Note.Title)</td>
+                <td>@noteViewModel.Note.Body</td>
+                <td>
+                    <div class="container text-center">
+                        <div class="row">
+                            
+                        @foreach (var tag in noteViewModel.Note.NoteTags)
+                        {
+                            <div class="col-sm-auto p-0">
+                                
+                                <div class="btn-group btn-group-sm m-1" role="group" aria-label="Tag Controls">
+                                    <button data-bs-target="#editTagModal-@noteViewModel.Note.Id" type="button" class="btn pt-0 pb-0" data-bs-toggle="modal" type="button" style="background-color: @tag.Tag.Color;" asp-action="Edit" asp-controller="Tag" data-tag-id="@tag.TagId">@tag.Tag.Name</button>
+                                                                       
+                                    <form action="/Note/RemoveTagFromNote" method="post">
+                                        <div>
+                                            <!-- Delete Tag Button -->
+                                            <button type="submit" class="btn pe-1 ps-1 btn-secondary" style="border-top-left-radius: 0; border-bottom-left-radius: 0; flex-grow: 1;">
+                                                X
+                                            </button>
+                                            <input name="noteId" type="hidden" id="hiddenNoteId" value="@noteViewModel.Note.Id"/>
+                                            <input name="selectedTagId" type="hidden" id="hiddenSelectedTag" value="@tag.TagId"/>
+
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+                            <div class="modal fade" id="editTagModal-@noteViewModel.Note.Id" tabindex="-1" aria-labelledby="editTagModalLabel" aria-hidden="true" >
+                                <div class="modal-dialog modal-sm">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="createTagModalLabel">Edit Tag</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <form action="Tag/Edit/" method="post">
+                                                    <div class="input-group mb-2">
+                                                        <span class="input-group-text" for="newTagName">Name</span>
+                                                        <input class="form-control" type="text" placeholder="@tag.Tag.Name" id="newTagName" name="name" required/>
+                                                    </div>
+
+                                                    <div class="input-group mb-2">
+                                                        <span class="input-group-text">Description</span>
+                                                        <input class="form-control" type="text" placeholder="@tag.Tag.Description" id="newTagDescription" name="description"/>
+
+                                                    </div>
+                                                    
+                                                    <div class="input-group mb-2">
+                                                        <label for="tagColorInput" class="form-label me-2">Color</label>
+                                                        <input type="color" class="form-control form-control-color" id="tagColorInput" name="color" value="@tag.Tag.Color" title="Alter Tag Color">
+                                                    </div>
+
+                                                    <input class="form-floating" type="hidden" placeholder="TagId" id="tagId" name="tagId" value="@tag.TagId"/>
+                                                    
+                                                    <div class="text-end">
+                                                        <button type="submit" aria-label="Edit Tag Button" class="btn btn-success">Save Changes</button>
+                                                        
+                                                    </div>
+                                            </form>
+
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            @tag.Tag.NoteCount
+                                            <form action="Tag/Delete/" method="post">
+                                                <div>
+                                                    <button type="submit" aria-label="Delete Tag Button" onclick="return confirm('Are you sure you want to delete this?')" class="btn btn-danger">Delete</button>
+                                                    <input name="tagId" type="hidden" id="hiddenTagIdDelete" value="@tag.TagId"/>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            }
+
+                        </div>
+
+                    </div>
+
+                    <!-- Add Tag to Note -->
+                    @if (noteViewModel.NonAppliedTags.Count != 0)
+                    {
+                        <button data-bs-target="#addTagModal-@noteViewModel.Note.Id" data-bs-toggle="modal" type="button" class="btn" asp-action="Create" asp-controller="Tag" data-note-id="@noteViewModel.Note.Id">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+                                <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                            </svg>
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" disabled class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+                                <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                            </svg>
+                        </button>
+                    }
+                    <div class="modal fade" id="addTagModal-@noteViewModel.Note.Id" tabindex="-1" aria-labelledby="createTagModalLabel" aria-hidden="true" >
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="createTagModalLabel">Add Tag(s) to @noteViewModel.Note.Title</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="/Note/AddTagToNote" method="post">
+     
+                                        <select name="selectedTags" multiple class="form-control" size="8">
+                                            
+                                            @foreach (var tag in noteViewModel.NonAppliedTags)
+                                            {
+                                                <option class="text-sm-center" value="@tag.Id">@tag.Name</option>
+                                            }
+                                        </select>
+                                        
+                                        <input name="noteId" type="hidden" id="hiddenNoteId" value="@noteViewModel.Note.Id"/>
+                                        
+                                        <div class="form-floating mt-2 text-end">
+                                            <button class="btn btn-primary" type="submit">Save</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer text-center">
+                                    <a class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#createTagCollapse">
+                                        Create New Tag
+                                    </a>
+                                    <div class="collapse" id="createTagCollapse">
+                                        <form action="/Tag/Create" method="post">
+                                            <div class="mb-2 form-floating">
+                                                <input type="text" id="tagName" class="form-control" placeholder="Name" name="Name" required/>
+                                                <label for="tagName" class="form-label">Name<a class="text-danger"> *</a></label>
+                                            </div>
+                                            <div class="mb-2 form-floating">
+                                                <input type="text" id="tagDescription" class="form-control" placeholder="Description" name="Description"/>
+                                                <label for="tagDescription" class="form-label">Description (Optional)</label>
+                                            </div>
+                                            <div class="text-danger">@Html.ValidationSummary(true)</div>
+                                            
+                                            <div class="input-group mb-2">
+                                                <label for="tagColorCreate" class="form-label me-2">Color</label>
+                                                <input type="color" class="form-control form-control-color" id="tagColorCreate" name="Color" value="#4dccc5" title="Create Tag Color">
+                                            </div>
+                                            
+                                            <div class="form-floating mt-2 text-end">
+                                                <button type="submit" class="btn btn-primary">Save</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </td>
                 <td>These are actions</td>
             </tr>
         }
         </tbody>
     </table>
 
+
     <!-- Pagination -->
-    <div>
-        <p>@ViewBag.CurrentPage</p>
-        <p>@ViewBag.TotalPages</p>
-        @if (ViewBag.CurrentPage > 1)
-        {
-            <a class="pagination-link" href="@Url.Action("GetNotes", new { view = "Table", currentPage = ViewBag.CurrentPage - 1 })">Previous</a>
-        }
-
-        <span class="text-black">Page @ViewBag.CurrentPage of @ViewBag.TotalPages</span>
-
-        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
-        {
-            <a class="pagination-link" href="@Url.Action("GetNotes", new { view = "Table", currentPage = ViewBag.CurrentPage + 1 })">Next</a>
-        }
-    </div>
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center m-2" id="noteViewPagination">
+        </ul>
+    </nav>
 </div>
+
+<script>
+
+// Table pagination
+$(document).ready(function() {
+    let currentPage = @ViewBag.CurrentPage;
+    let totalPage = @ViewBag.TotalPages;
+    let selectedCategory = localStorage.getItem("selectedCategory");
+
+    // Generate GoToStart link
+    let goToStart = $('<a>').addClass('pagination-link page-link').text('<<<');
+    goToStart.attr('href', `/Note/GetNotes?view=Table&currentPage=${1}&category=${selectedCategory}`);
+
+    let goToStartItem = $('<li>').addClass('page-item').append(goToStart);
+    if (currentPage === 1) {
+        goToStartItem.addClass('disabled');
+    }
+
+    // Generate Prev link
+    let previousLink = $('<a>').addClass('pagination-link page-link').text('Previous');
+    if (currentPage > 1) {
+        previousLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage - 1}&category=${selectedCategory}`);
+    } else {
+        previousLink.addClass('disabled');
+    }
+    let previousListItem = $('<li>').addClass('page-item').append(previousLink);
+
+    // Generate left 2 links
+    let leftLinks = [];
+    for (let i = currentPage - 1; i >= currentPage - 2; i--) {
+        if (i >= 1) {
+            let pageLink = $('<a>').addClass('pagination-link page-link');
+            pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${i}&category=${selectedCategory}`);
+            pageLink.text(i);
+
+            let listItem = $('<li>').addClass('page-item');
+            listItem.append(pageLink);
+            leftLinks.unshift(listItem);
+        }
+    }
+
+    // Generate current page link
+    let currentLink;
+    if (currentPage >= 1 || currentPage <= totalPage) {
+        let pageLink = $('<a>').addClass('pagination-link page-link');
+        pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage}&category=${selectedCategory}`).text(currentPage);
+
+        let listItem = $('<li>').addClass('page-item active disabled');
+        listItem.append(pageLink);
+
+        currentLink = listItem;
+    }
+
+    // Generate right 2 links
+    let rightLinks = [];
+    for (let i = currentPage + 1; i <= currentPage + 2; i++) {
+        if (i <= totalPage) {
+            let pageLink = $('<a>').addClass('pagination-link page-link');
+            pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${i}&category=${selectedCategory}`);
+            pageLink.text(i);
+
+            let listItem = $('<li>').addClass('page-item');
+            listItem.append(pageLink);
+            rightLinks.push(listItem);
+        }
+    }
+
+    // Generate Next link
+    let nextLink = $('<a>').addClass('pagination-link page-link').text('Next');
+    if (currentPage < totalPage) {
+        nextLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage + 1}&category=${selectedCategory}`);
+    } else {
+        nextLink.addClass('disabled');
+    }
+    let nextListItem = $('<li>').addClass('page-item').append(nextLink);
+
+    // Generate GoToEnd link
+    let goToEnd = $('<a>').addClass('pagination-link page-link').text('>>>');
+    goToEnd.attr('href', `/Note/GetNotes?view=Table&currentPage=${totalPage}&category=${selectedCategory}`);
+
+    let goToEndItem = $('<li>').addClass('page-item').append(goToEnd);
+    if (currentPage === totalPage) {
+        goToEndItem.addClass('disabled');
+    }
+
+    // Append all the links to #noteViewPagination in the correct order
+    $('#noteViewPagination').append(goToStartItem, previousListItem, leftLinks, currentLink, rightLinks, nextListItem, goToEndItem);
+});
+
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        getCategories();
+    })
+
+    function getCategories() {
+        $.get('/Category/GetCategories', function (data) {
+            // Assuming the id of your dropdown list is 'categoryDropdown'
+            let dropdown = document.getElementById('categoryDropdown');
+
+            // Clear any existing options
+            dropdown.innerHTML = '';
+            let option = document.createElement('option');
+            option.value = "";
+            option.text = "";
+            dropdown.add(option);
+            // Add an option for each category
+            data.forEach(function(category) {
+                let option = document.createElement('option');
+                option.value = category.name;
+                option.text = (category.name);
+                dropdown.add(option);
+            });
+            
+            // Set the selected category to the value in localStorage, if it exists
+            var selectedCategory = localStorage.getItem('selectedCategory');
+            if (selectedCategory) {
+                dropdown.value = selectedCategory;
+            }
+
+        })
+    }
+    
+    document.getElementById('categoryDropdown').addEventListener('change', function() {
+        // When the selected category changes, store the new value in localStorage
+        localStorage.setItem('selectedCategory', this.value);
+        location.reload();
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('button[data-bs-toggle="modal"]').click(function() {
+            var noteId = $(this).data('note-id');
+            $('#hiddenNoteId-' + noteId).val(noteId); // This will set the NoteId as the value of the hidden input field
+        });
+    });
+    
+    // Hide success alert after 3 seconds
+    $(document).ready(function () {
+        if ($('#TagSuccessAlert').length) {
+            setTimeout(function () {
+                $('#TagSuccessAlert').fadeOut('slow');
+            }, 2000)
+        }
+    })
+    
+    // Hide success alert after 3 seconds
+    $(document).ready(function () {
+        if ($('#TagErrorAlert').length) {
+            setTimeout(function () {
+                $('#TagErrorAlert').fadeOut('slow');
+            }, 6000)
+        }
+    })
+</script>

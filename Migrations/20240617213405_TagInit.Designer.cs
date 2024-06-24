@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NoteApp.Helpers;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NoteApp.Migrations
 {
     [DbContext(typeof(NoteDbContext))]
-    partial class NoteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240617213405_TagInit")]
+    partial class TagInit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,21 +93,6 @@ namespace NoteApp.Migrations
                     b.ToTable("Note", (string)null);
                 });
 
-            modelBuilder.Entity("NoteApp.Models.NoteTag", b =>
-                {
-                    b.Property<Guid>("NoteId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TagId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("NoteId", "TagId");
-
-                    b.HasIndex("TagId");
-
-                    b.ToTable("NoteTags");
-                });
-
             modelBuilder.Entity("NoteApp.Models.Tag", b =>
                 {
                     b.Property<Guid>("Id")
@@ -145,6 +133,21 @@ namespace NoteApp.Migrations
                     b.ToTable("Tag", (string)null);
                 });
 
+            modelBuilder.Entity("NoteTag", b =>
+                {
+                    b.Property<Guid>("NotesId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TagsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("NotesId", "TagsId");
+
+                    b.HasIndex("TagsId");
+
+                    b.ToTable("NoteTag");
+                });
+
             modelBuilder.Entity("NoteApp.Models.Note", b =>
                 {
                     b.HasOne("NoteApp.Models.Category", "Category")
@@ -154,33 +157,19 @@ namespace NoteApp.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("NoteApp.Models.NoteTag", b =>
+            modelBuilder.Entity("NoteTag", b =>
                 {
-                    b.HasOne("NoteApp.Models.Note", "Note")
-                        .WithMany("NoteTags")
-                        .HasForeignKey("NoteId")
+                    b.HasOne("NoteApp.Models.Note", null)
+                        .WithMany()
+                        .HasForeignKey("NotesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NoteApp.Models.Tag", "Tag")
-                        .WithMany("NoteTags")
-                        .HasForeignKey("TagId")
+                    b.HasOne("NoteApp.Models.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Note");
-
-                    b.Navigation("Tag");
-                });
-
-            modelBuilder.Entity("NoteApp.Models.Note", b =>
-                {
-                    b.Navigation("NoteTags");
-                });
-
-            modelBuilder.Entity("NoteApp.Models.Tag", b =>
-                {
-                    b.Navigation("NoteTags");
                 });
 #pragma warning restore 612, 618
         }

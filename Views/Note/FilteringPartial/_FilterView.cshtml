@@ -30,7 +30,7 @@
                     @foreach (var tag in Model)
                     {
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox"  name="tagFCheckbox" id="tagFCheckbox" value="@tag.Id"/>
+                            <input class="form-check-input" type="checkbox"  name="tagFCheckbox" id="tagFCheckbox+@tag.Id" value="@tag.Id"/>
                             <label class="form-check-label" for="#tagFilterCB+@tag.Id">@tag.Name</label>
                         </div>
                     }
@@ -46,23 +46,28 @@
 
 <script>
     $(document).ready(function (){
-        $('input[name="tagFCheckbox"]').change(function () {
+        $('input[type="checkbox"][id^="tagFCheckbox+"]').change(function () {
             let tagId = $(this).val();
             let selectedTagIds = JSON.parse(localStorage.getItem('selectedTagIds') || '[]')
-            
+
             if ($(this).is(':checked')) {
                 if (tagId && typeof tagId === "string"){
                     selectedTagIds.push(tagId);
                 }
             } else {
-
                 selectedTagIds = selectedTagIds.filter(id => id !== tagId);
             }
-            
             // Store updated list in selectedTagIds in localStorage
             localStorage.setItem('selectedTagIds', JSON.stringify(selectedTagIds))
-            
         })
-        
+
+        let storedTagIds = JSON.parse(localStorage.getItem('selectedTagIds') || '[]');
+
+        if (storedTagIds) {
+            storedTagIds.map(function(tag) {
+                console.log("tagFCheckbox+" + tag);
+                $(`input[type="checkbox"][id="tagFCheckbox+${tag}"]`).prop('checked', true);
+            })
+        }
     })
 </script>

@@ -24,10 +24,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const storedCategory: string | null = localStorage.getItem('selectedCategory');
     let storedTagIds = JSON.parse(localStorage.getItem('selectedTagIds') || '[]');
     
+    // Repopulates view selector with users choice
     if (storedView) {
         $('#viewSelector').val(storedView);
         loadView(storedView, storedCategory, storedTagIds);
     }
+    
+
+        
+    
     
     
     $('#viewSelector').change(function () {
@@ -52,8 +57,5 @@ function loadView(view: string, category: string | null, selectedTagIds: string[
             $('#notesSection').html(data);
         }
     })
-    // $.get('/Note/GetNotes?view=' + view + "&category=" + category, function(data) {
-    //     $('#notesSection').html(data)
-    // })
-}
 
+}

@@ -22,26 +22,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // NoteView Handlers
     const storedView: string | null = localStorage.getItem('noteView');
     const storedCategory: string | null = localStorage.getItem('selectedCategory');
+    let storedTagIds = JSON.parse(localStorage.getItem('selectedTagIds') || '[]');
     
     if (storedView) {
         $('#viewSelector').val(storedView);
-        loadView(storedView, storedCategory);
+        loadView(storedView, storedCategory, storedTagIds);
     }
     
     
     $('#viewSelector').change(function () {
         const selectedView: string = <string>$(this).val();
         localStorage.setItem('noteView', selectedView);
-        loadView(selectedView, storedCategory);
+        loadView(selectedView, storedCategory, storedTagIds);
     })
     // End NoteView Handlers
     
 });
 
-function loadView(view: string, category: string | null) {
-
-    $.get('/Note/GetNotes?view=' + view + "&category=" + category, function(data) {
-        $('#notesSection').html(data)
+function loadView(view: string, category: string | null, selectedTagIds: string[]) {
+    $.ajax({
+        url: '/Note/GetNotes/',
+        type: 'GET',
+        data: {
+            view: view,
+            category: category,
+            filterTags: selectedTagIds.join(','),
+        },
+        success: function (data) {
+            $('#notesSection').html(data);
+        }
     })
+    // $.get('/Note/GetNotes?view=' + view + "&category=" + category, function(data) {
+    //     $('#notesSection').html(data)
+    // })
 }
 

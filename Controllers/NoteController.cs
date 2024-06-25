@@ -24,6 +24,7 @@ namespace NoteApp.Controllers
         public int TotalPages { get; set; } = 1;
         public int ItemsPerPage { get; set; } = 20;
         public string SelectedCategory { get; set; } = null!;
+        public List<Guid> SelectedTags { get; set; } = null!;
         
         public NoteController(NoteDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, ILogger<NoteController> iLogger)
         {
@@ -39,7 +40,6 @@ namespace NoteApp.Controllers
             var userId = _userManager.GetUserId(User);
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
-            
             
             var notes = await _context.Notes
                 .Where(note => note.IsOwnedBy == userId)
@@ -183,8 +183,8 @@ namespace NoteApp.Controllers
                 return Json(new { success = false });
             }
         }
-
-        private IEnumerable<NoteViewModel> GetNoteViewModels(string userId, string category, int currentPage)
+        
+        private IEnumerable<NoteViewModel> GetNoteViewModels(string userId, string category, int currentPage, List<Guid> selectedTags)
         {
 
             // Get notes from DB
@@ -199,6 +199,12 @@ namespace NoteApp.Controllers
                 tableNotesQuery = tableNotesQuery.Where(note => note.Category.Name == category);
             }
 
+            // Filter notes based on selected tags
+            if (selectedTags is { Count: > 0 })
+            {
+                tableNotesQuery = tableNotesQuery.Where(note => note.NoteTags.Any(nt => selectedTags.Contains(nt.TagId)));
+            }
+            
             // Pagination
             var tableNotes = tableNotesQuery
                 .Skip((CurrentPage - 1) * ItemsPerPage)
@@ -234,16 +240,17 @@ namespace NoteApp.Controllers
 
             return tags;
         }
-         
-        public async Task<IActionResult> GetNotes(string view, string category, int currentPage)
+
+        public async Task<IActionResult> GetNotes(string view, string category, int currentPage, List<Guid> filterTags)
         {
             var userId = _userManager.GetUserId(User);
-            // var noteViewModels = new List<NoteViewModel>();
-
+            
             if (view == "Table")
             {
                 CurrentPage = currentPage > 0 ? currentPage : 1;
                 SelectedCategory = category;
+                SelectedTags = filterTags;
+                
                 var totalNotesForUser = await _context.Notes
                     .Where(note => note.IsOwnedBy == userId)
                     .Where(note => note.Category.Name == SelectedCategory)
@@ -257,7 +264,7 @@ namespace NoteApp.Controllers
      
                 var noteTagViewModels = new NoteTagViewModel
                 {
-                    NoteViewModels = GetNoteViewModels(userId, category, currentPage),
+                    NoteViewModels = GetNoteViewModels(userId, category, currentPage, filterTags),
                     Tags = GetUserOwnedTags(userId)
                 };
 

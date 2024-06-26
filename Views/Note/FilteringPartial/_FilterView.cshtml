@@ -25,22 +25,22 @@
             Tags
         </button>
         <div id="collapseTagFilter" class="collapse">
-            <div class="card card-body">
-                <div id="tagFilterCBList">
+            <div class="p-1 justify-content-evenly">
+                <div id="tagFilterCBList" class="text-start">
                     
                 <!-- Only load the first 15 tags -->
                 @{ var displayedTags = Model.Take(5); }
                 <!-- Displays tags in filter sidebar -->
                 @foreach (var tag in displayedTags)
                 {
-                    <div class="form-check form-check-inline">
+                    <div class="form-check form-check-inline text-start">
                         <input class="form-check-input" type="checkbox" name="tagFCheckbox" id="tagFCheckbox+@tag.Id" value="@tag.Id"/>
                         <label class="form-check-label" for="#tagFilterCB+@tag.Id">@tag.Name</label>
                     </div>
                 }
                 </div>
 
-                <div class="btn-group">
+                <div class="btn-group btn-group-sm">
                     <button type="button" class="btn btn-primary" id="tagFilterClearBtn">
                         Clear
                     </button>

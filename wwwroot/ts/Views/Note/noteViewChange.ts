@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-document.addEventListener('DOMContentLoaded', () => {
+$(document).ready(function() {
     
     // TableView Pagination Handlers
     $('body').on('click', '.pagination-link', function(e) {
@@ -30,11 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadView(storedView, storedCategory, storedTagIds);
     }
     
-
-        
-    
-    
-    
     $('#viewSelector').change(function () {
         const selectedView: string = <string>$(this).val();
         localStorage.setItem('noteView', selectedView);
@@ -42,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     // End NoteView Handlers
     
-});
+})
 
 function loadView(view: string, category: string | null, selectedTagIds: string[]) {
     $.ajax({

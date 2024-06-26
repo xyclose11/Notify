@@ -26,7 +26,6 @@
         </button>
         <div id="collapseTagFilter" class="collapse">
             <div class="card card-body">
-                <form action="/Note/FilterTag" method="post">
                     @foreach (var tag in Model)
                     {
                         <div class="form-check form-check-inline">
@@ -34,11 +33,10 @@
                             <label class="form-check-label" for="#tagFilterCB+@tag.Id">@tag.Name</label>
                         </div>
                     }
-                </form>
             </div>
         </div>
     </div>
-    <button class="btn btn-secondary" type="button">
+    <button class="btn btn-secondary" id="filterButton" type="button">
         Filter
     </button>
     
@@ -65,9 +63,13 @@
 
         if (storedTagIds) {
             storedTagIds.map(function(tag) {
-                console.log("tagFCheckbox+" + tag);
                 $(`input[type="checkbox"][id="tagFCheckbox+${tag}"]`).prop('checked', true);
             })
         }
+
+        $('#filterButton').click(function() {
+            location.reload()
+        });
+
     })
 </script>

@@ -128,5 +128,11 @@ public class TagController: Controller
         TempData["SuccessMessage"] = $"Changes on tag: <strong> {tag.Name} </strong> saved successfully!";
         return RedirectToAction("Index", "Note");
     }
+
+    public async Task<IActionResult> LoadMoreTags(int currentTagCount)
+    {
+        var moreTags = _context.Tags.Skip(currentTagCount).Take(5);
+        return Json(moreTags);
+    }
     
 }

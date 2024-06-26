@@ -20,11 +20,17 @@ public class NoteDbContext : DbContext
     }
     
     public DbSet<Note> Notes { get; set; }
-
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<Tag> Tags { get; set; }
+    public DbSet<NoteTag> NoteTags { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<NoteTag>().HasKey(sc => new { sc.NoteId, sc.TagId });
         modelBuilder.Entity<Note>().ToTable("Note");
+        modelBuilder.Entity<Category>().ToTable("Category");
+        modelBuilder.Entity<Tag>().ToTable("Tag");
     }
 }
 

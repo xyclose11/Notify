@@ -1,0 +1,93 @@
+@model IEnumerable<NoteApp.Models.Tag>
+
+<div class="col-2 border border-secondary-subtle rounded-3 border-1" id="filterTagContainer">
+    <div class="row border border-1 m-1 rounded-3 border-secondary-subtle">
+        <h3>Filters</h3>
+    </div>
+    <div class="row m-1 rounded-3">
+        <!-- Displays the categories -->
+        <div class="dropdown-align-right p-0 d-block mx-auto">
+            <div class="form-floating m-1 p-0">
+                <select class="form-select" aria-label="Category Selector" id="categoryDropdown">
+                    <option></option>
+                </select>
+                <label for="categoryDropdown">Category</label>
+            </div>
+        </div>    
+    </div>
+
+    <div class="row border border-1 m-1 rounded-3 border-secondary-subtle">
+        <p>Groups!</p>
+    </div>
+
+    <div class="row border border-1 m-1 rounded-3 border-secondary-subtle">
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTagFilter" aria-expanded="True" aria-controls="collapseTagFilter">
+            Tags
+        </button>
+        <div id="collapseTagFilter" class="collapse">
+            <div class="p-1 justify-content-evenly">
+                <div id="tagFilterCBList" class="text-start">
+                    
+                <!-- Only load the first 15 tags -->
+                @{ var displayedTags = Model.Take(5); }
+                <!-- Displays tags in filter sidebar -->
+                @foreach (var tag in displayedTags)
+                {
+                    <div class="form-check form-check-inline text-start">
+                        <input class="form-check-input" type="checkbox" name="tagFCheckbox" id="tagFCheckbox+@tag.Id" value="@tag.Id"/>
+                        <label class="form-check-label" for="#tagFilterCB+@tag.Id">@tag.Name</label>
+                    </div>
+                }
+                </div>
+
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-primary" id="tagFilterClearBtn">
+                        Clear
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="tagLoadMoreBtn">
+                        More Tags?
+                    </button>
+                </div>
+            </div>  
+        </div>
+    </div>
+    <button class="btn btn-secondary" id="filterButton" type="button">
+        Apply
+    </button>
+    
+</div>
+
+<script>
+        $(document).ready(function (){
+            $(document).on('change', 'input[type="checkbox"][id^="tagFCheckbox+"]', function() {
+                let tagId = $(this).val();
+                let selectedTagIds = JSON.parse(localStorage.getItem('selectedTagIds') || '[]')
+                if ($(this).is(':checked')) {
+                    if (tagId && typeof tagId === "string"){
+                        selectedTagIds.push(tagId);
+                    }
+                } else {
+                    selectedTagIds = selectedTagIds.filter(id => id !== tagId);
+                }
+                // Store updated list in selectedTagIds in localStorage
+                localStorage.setItem('selectedTagIds', JSON.stringify(selectedTagIds))
+            
+            })
+
+            let storedTagIds = JSON.parse(localStorage.getItem('selectedTagIds') || '[]');
+
+            if (storedTagIds) {
+                storedTagIds.map(function(tag) {
+                    $(`input[type="checkbox"][id="tagFCheckbox+${tag}"]`).prop('checked', true);
+                })
+            }
+
+            // Refresh the page to trigger the filtered data
+            $('#filterButton').click(function() {
+                location.reload()
+            });
+
+        })
+    </script>
+    
+

@@ -1,45 +1,33 @@
 import $ from 'jquery';
-
-$(document).ready(function() {
-    
+$(document).ready(function () {
     // TableView Pagination Handlers
-    $('body').on('click', '.pagination-link', function(e) {
+    $('body').on('click', '.pagination-link', function (e) {
         e.preventDefault();
-
-        const url: string | undefined = $(this).attr('href');
-
+        const url = $(this).attr('href');
         if (url) {
             $.get(url, function (data) {
                 $('#noteViewTableContainer').html(data);
-            })
+            });
         }
-    })
-    
-    
-    
+    });
     // End TableView Pagination Handlers
-    
     // NoteView Handlers
-    const storedView: string | null = localStorage.getItem('noteView');
-    const storedCategory: string | null = localStorage.getItem('selectedCategory');
+    const storedView = localStorage.getItem('noteView');
+    const storedCategory = localStorage.getItem('selectedCategory');
     let storedTagIds = JSON.parse(localStorage.getItem('selectedTagIds') || '[]');
-    
     // Repopulates view selector with users choice
     if (storedView) {
         $('#viewSelector').val(storedView);
         loadView(storedView, storedCategory, storedTagIds);
     }
-    
     $('#viewSelector').change(function () {
-        const selectedView: string = <string>$(this).val();
+        const selectedView = $(this).val();
         localStorage.setItem('noteView', selectedView);
         loadView(selectedView, storedCategory, storedTagIds);
-    })
+    });
     // End NoteView Handlers
-    
-})
-
-function loadView(view: string, category: string | null, selectedTagIds: string[]) {
+});
+function loadView(view, category, selectedTagIds) {
     $.ajax({
         url: '/Note/GetNotes/',
         type: 'GET',
@@ -51,6 +39,5 @@ function loadView(view: string, category: string | null, selectedTagIds: string[
         success: function (data) {
             $('#notesSection').html(data);
         }
-    })
-
+    });
 }

@@ -657,14 +657,25 @@ eval("var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!\n * jQ
 
 /***/ }),
 
-/***/ "./wwwroot/ts/admin/userList.ts":
+/***/ "./wwwroot/js/Views/Note/noteViewChange.js":
+/*!*************************************************!*\
+  !*** ./wwwroot/js/Views/Note/noteViewChange.js ***!
+  \*************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nconst jquery_1 = __importDefault(__webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\"));\ndocument.addEventListener('DOMContentLoaded', () => {\n    (0, jquery_1.default)('#viewSelector').change(function () {\n        const selectedView = (0, jquery_1.default)(this).val();\n        jquery_1.default.get('/Note/GetNotes?view=' + selectedView, function (data) {\n            (0, jquery_1.default)('#notesSection').html(data);\n        });\n    });\n});\n\n\n//# sourceURL=webpack://noteapp/./wwwroot/js/Views/Note/noteViewChange.js?");
+
+/***/ }),
+
+/***/ "./wwwroot/js/admin/userList.js":
 /*!**************************************!*\
-  !*** ./wwwroot/ts/admin/userList.ts ***!
+  !*** ./wwwroot/js/admin/userList.js ***!
   \**************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nconst jquery_1 = __importDefault(__webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\"));\n__webpack_require__(/*! bootstrap */ \"./node_modules/bootstrap/dist/js/bootstrap.esm.js\");\n(0, jquery_1.default)('.delete-user-form').on('submit', function (event) {\n    const $form = (0, jquery_1.default)(this).closest('form');\n    console.log($form);\n    event.preventDefault();\n    (0, jquery_1.default)('#deleteConfirmationModal').modal('show').on('click', '#confirmDeleteButton', function (e) {\n        $form.trigger('submit');\n    });\n    (0, jquery_1.default)('#cancel').on('click', function (e) {\n        e.preventDefault();\n        (0, jquery_1.default)('#deleteConfirmationModal').modal('hide');\n    });\n});\n\n\n//# sourceURL=webpack://noteapp/./wwwroot/ts/admin/userList.ts?");
+eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nconst jquery_1 = __importDefault(__webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\"));\n__webpack_require__(/*! bootstrap */ \"./node_modules/bootstrap/dist/js/bootstrap.esm.js\");\n(0, jquery_1.default)('.delete-user-form').on('submit', function (event) {\n    const $form = (0, jquery_1.default)(this).closest('form');\n    console.log($form);\n    event.preventDefault();\n    (0, jquery_1.default)('#deleteConfirmationModal').modal('show').on('click', '#confirmDeleteButton', function (e) {\n        $form.trigger('submit');\n    });\n    (0, jquery_1.default)('#cancel').on('click', function (e) {\n        e.preventDefault();\n        (0, jquery_1.default)('#deleteConfirmationModal').modal('hide');\n    });\n});\n\n\n//# sourceURL=webpack://noteapp/./wwwroot/js/admin/userList.js?");
 
 /***/ })
 
@@ -728,7 +739,8 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__("./wwwroot/ts/admin/userList.ts");
+/******/ 	__webpack_require__("./wwwroot/js/admin/userList.js");
+/******/ 	var __webpack_exports__ = __webpack_require__("./wwwroot/js/Views/Note/noteViewChange.js");
 /******/ 	
 /******/ })()
 ;

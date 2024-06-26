@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NoteApp.Helpers;
 using NoteApp.Models.ViewModels.Notes;
@@ -17,16 +18,20 @@ namespace NoteApp.Controllers
         private readonly NoteDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILogger<NoteController> _logger;
 
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; } = 1;
-        public int ItemsPerPage { get; set; } = 10;
+        public int ItemsPerPage { get; set; } = 20;
+        public string SelectedCategory { get; set; } = null!;
+        public List<Guid> SelectedTags { get; set; } = null!;
         
-        public NoteController(NoteDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public NoteController(NoteDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, ILogger<NoteController> iLogger)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _logger = iLogger;
         }
 
         // GET: Note
@@ -35,7 +40,6 @@ namespace NoteApp.Controllers
             var userId = _userManager.GetUserId(User);
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
-            
             
             var notes = await _context.Notes
                 .Where(note => note.IsOwnedBy == userId)
@@ -70,24 +74,54 @@ namespace NoteApp.Controllers
         // GET: Note/Create
         public IActionResult Create()
         {
+            // Pass all the categories to the view in a dropdown list
+            ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name");
+            ViewBag.UserOwnedTags = new SelectList(_context.NoteTags
+                .Where(tag => tag.Tag.WasCreatedBy == _userManager.GetUserId(User)), "Id", "Name");
             return View();
         }
 
         // POST: Note/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Id,Title,Body")] Note note)
+        public IActionResult Create([Bind("Id,Title,Body,CategoryId,NoteTags")] Note note, List<Guid> selectedTags)
         {
             note.IsOwnedBy = _userManager.GetUserId(User);
             note.CreatedAt = DateTime.UtcNow;
             note.UpdatedAt = DateTime.UtcNow;
-            
+
             if (ModelState.IsValid)
             {
-                _context.Add(note);
+                // Check if selectedTags is null or empty
+                if (selectedTags == null || !selectedTags.Any())
+                {
+                    _logger.LogInformation("No tags were selected.");
+                }
+                else
+                {
+                    // Add any selected tags to note
+                    foreach (var Id in selectedTags)
+                    {
+                        var tag = _context.Tags.Find(Id);
+                        if (tag != null)
+                        {
+                            note.NoteTags.Add(new NoteTag { Note = note, Tag = tag});
+                        }
+                        else
+                        {
+                            _logger.LogInformation("No tag found with ID: {Id}", Id);
+                        }
+                    }
+                }
+
+                _context.Notes.Add(note);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
+            // If the model state is not valid, repopulate the categories and return the view
+            ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name");
+            ViewBag.UserOwnedTags = new SelectList(_context.NoteTags
+                .Where(tag => tag.Tag.WasCreatedBy == _userManager.GetUserId(User)), "Id", "Name");
 
             return View(note);
         }
@@ -149,31 +183,92 @@ namespace NoteApp.Controllers
                 return Json(new { success = false });
             }
         }
+        
+        private IEnumerable<NoteViewModel> GetNoteViewModels(string userId, string category, int currentPage, List<Guid> selectedTags)
+        {
 
-         
-        public async Task<IActionResult> GetNotes(string view, int currentPage)
+            // Get notes from DB
+            var tableNotesQuery = _context.Notes
+                .Include(note => note.Category)
+                .Include(note => note.NoteTags)
+                .ThenInclude(nt => nt.Tag)
+                .Where(note => note.IsOwnedBy == userId);
+
+            if (!string.IsNullOrEmpty(category))
+            {
+                tableNotesQuery = tableNotesQuery.Where(note => note.Category.Name == category);
+            }
+
+            // Filter notes based on selected tags
+            if (selectedTags is { Count: > 0 })
+            {
+                tableNotesQuery = tableNotesQuery.Where(note => note.NoteTags.Any(nt => selectedTags.Contains(nt.TagId)));
+            }
+            
+            // Pagination
+            var tableNotes = tableNotesQuery
+                .Skip((CurrentPage - 1) * ItemsPerPage)
+                .Take(ItemsPerPage)
+                .ToList();
+            
+            // Map the notes to NoteViewModels
+            var noteViewModels = tableNotes.Select(note =>
+            {
+                // Get the tags created by the owner of the note
+                var userOwnedTags = _context.Tags.Where(tag => tag.WasCreatedBy == note.IsOwnedBy).ToList();
+
+                // Get the tags that are not already applied to the note
+                var nonAppliedTags = userOwnedTags.Where(tag => !note.NoteTags.Select(nt => nt.TagId).Contains(tag.Id)).ToList();
+
+                return new NoteViewModel
+                {
+                    Note = note,
+                    UserOwnedTags = userOwnedTags,
+                    NonAppliedTags = nonAppliedTags
+                };
+            });
+
+            return noteViewModels;
+        }
+        
+        private IEnumerable<Tag> GetUserOwnedTags(string userId)
+        {
+            // Get the tags from the database
+            var tags = _context.Tags
+                .Where(tag => tag.WasCreatedBy == userId)
+                .ToList();
+
+            return tags;
+        }
+
+        public async Task<IActionResult> GetNotes(string view, string category, int currentPage, List<Guid> filterTags)
         {
             var userId = _userManager.GetUserId(User);
             
             if (view == "Table")
             {
                 CurrentPage = currentPage > 0 ? currentPage : 1;
-
+                SelectedCategory = category;
+                SelectedTags = filterTags;
                 
-                var totalNotesForUser = await _context.Notes.Where(note => note.IsOwnedBy == userId).CountAsync();
+                var totalNotesForUser = await _context.Notes
+                    .Where(note => note.IsOwnedBy == userId)
+                    .Where(note => note.Category.Name == SelectedCategory)
+                    .CountAsync();
 
                 TotalPages = (int)Math.Ceiling(totalNotesForUser / (double)ItemsPerPage);
 
                 ViewBag.CurrentPage = CurrentPage;
                 ViewBag.TotalPages = TotalPages;
-                
-                var tableNotes = await _context.Notes
-                    .Where(note => note.IsOwnedBy == userId)
-                    .Skip((CurrentPage - 1) * ItemsPerPage)
-                    .Take(ItemsPerPage)
-                    .ToListAsync();
+                ViewBag.Categories = await _context.Categories.ToListAsync();
+     
+                var noteTagViewModels = new NoteTagViewModel
+                {
+                    NoteViewModels = GetNoteViewModels(userId, category, currentPage, filterTags),
+                    Tags = GetUserOwnedTags(userId)
+                };
 
-                return PartialView("_TableView", tableNotes);
+                return PartialView("_TableView", noteTagViewModels);
             }
 
             
@@ -262,8 +357,82 @@ namespace NoteApp.Controllers
             return RedirectToAction(nameof(Index));
 
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddTagToNote(List<Guid> selectedTags, Guid noteId)
+        {
+            var note = await _context.Notes.FindAsync(noteId);
+
+            if (note == null)
+            {
+                return NotFound();
+            }
+            foreach (var Id in selectedTags)
+            {
+                var tag = await _context.Tags.FindAsync(Id);
+                if (tag == null)
+                {
+                    TempData["ErrorMessage"] = $"{tag.Name} Was not found.";           
+                    ModelState.AddModelError("Name", "Tag Name not found.");
+                }
+
+                if (note.NoteTags.All(nt => nt.TagId != Id))
+                {
+                    tag.NoteTags.Add(new NoteTag{ Note = note, Tag = tag});
+                    
+                    // Update tag noteCount by 1
+                    tag.NoteCount += 1;
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = $"{tag.Name} Already Exists.";           
+
+                    ModelState.AddModelError("Name", "Tag already exists.");
+                }
+            }
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Tag(s) added to {note.Title} successfully";           
+            return RedirectToAction("Index");
+        }
+        [HttpPost]
+        public async Task<IActionResult> RemoveTagFromNote(Guid selectedTagId, Guid noteId)
+        {
+
+            var noteTag = await _context.NoteTags
+                .Where(nt => nt.NoteId == noteId && nt.TagId == selectedTagId)
+                .FirstOrDefaultAsync();
+
+            if (noteTag != null)
+            {
+                _context.NoteTags.Remove(noteTag);
+                
+                // Decrement Tag NoteCount field by 1
+                var tag = await _context.Tags.FindAsync(selectedTagId);
+                if (tag is { NoteCount: >= 1 })
+                {
+                    // Decrease the NoteCount by 1
+                    tag.NoteCount -= 1;
+                }
+                
+                TempData["SuccessMessage"] = $"Tag(s): <strong> {tag.Name} </strong> removed successfully";           
+
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "ERROR: NoteTag is null.";           
+                ModelState.AddModelError("Name", "Tag already exists.");
+            }
+
+            
+            
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
         
         
         
     }
+    
 }

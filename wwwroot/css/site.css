@@ -36,3 +36,8 @@ body {
 .form-select {
   max-width: 125px;
 }
+
+.dropdown-align-right {
+  display: flex;
+  justify-content: flex-end;
+}

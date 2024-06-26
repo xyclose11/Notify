@@ -13,7 +13,8 @@
 
 
                 <a class="btn btn-secondary text-white text-decoration-none text-md-center" href="@Url.Action("Create")">New Note +</a>
-
+                <a class="btn btn-secondary text-white text-decoration-none text-md-center" asp-action="Create" asp-controller="Category">Create Category</a>
+                <a class="btn btn-secondary text-white text-decoration-none text-md-center" asp-action="Create" asp-controller="Tag">Create Tag</a>
 
         </div>
         <select class="form-select" aria-label="View Selector" id="viewSelector">
@@ -29,30 +30,32 @@
         <!-- Where the partial views are rendered -->
 </div>
 
-
-<script>
-        $(document).ready(function() {
-                $('.delete-note').on('click', function() {
-                        const noteId = $(this).data('note-id');
-                        $.ajax({
-                                url: '/Note/Delete/' + noteId,
-                                type: 'POST',
-                                headers: {
-                                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                                },
-                                success: function(result) {
-                                        if (result.success) {
-                                                // Remove the note from the DOM
-                                                $(this).closest('.card').remove();
-                                        } else {
-                                                // Handle error
-                                                alert('Error deleting note.');
+@section Scripts
+{
+        <script>
+                $(document).ready(function() {
+                        $('.delete-note').on('click', function() {
+                                const noteId = $(this).data('note-id');
+                                $.ajax({
+                                        url: '/Note/Delete/' + noteId,
+                                        type: 'POST',
+                                        headers: {
+                                                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                                        },
+                                        success: function(result) {
+                                                if (result.success) {
+                                                        // Remove the note from the DOM
+                                                        $(this).closest('.card').remove();
+                                                } else {
+                                                        // Handle error
+                                                        alert('Error deleting note.');
+                                                }
                                         }
-                                }
-                                
+                                        
+                                });
                         });
                 });
-        });
-</script>
-<script src="~/js/bundle.js"></script>
+        </script>
+}
+
 

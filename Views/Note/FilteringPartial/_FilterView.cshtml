@@ -1,6 +1,6 @@
 @model IEnumerable<NoteApp.Models.Tag>
 
-<div class="col-2 border border-secondary-subtle rounded-3 border-1">
+<div class="col-2 border border-secondary-subtle rounded-3 border-1" id="filterTagContainer">
     <div class="row border border-1 m-1 rounded-3 border-secondary-subtle">
         <h3>Filters</h3>
     </div>
@@ -33,6 +33,9 @@
                             <label class="form-check-label" for="#tagFilterCB+@tag.Id">@tag.Name</label>
                         </div>
                     }
+                    <button type="button" class="btn btn-primary" id="tagFilterClearBtn">
+                        Clear
+                    </button>
             </div>
         </div>
     </div>
@@ -42,34 +45,37 @@
     
 </div>
 
-<script>
-    $(document).ready(function (){
-        $('input[type="checkbox"][id^="tagFCheckbox+"]').change(function () {
-            let tagId = $(this).val();
-            let selectedTagIds = JSON.parse(localStorage.getItem('selectedTagIds') || '[]')
+    <script>
+        $(document).ready(function (){
+            $('input[type="checkbox"][id^="tagFCheckbox+"]').change(function () {
+                let tagId = $(this).val();
+                let selectedTagIds = JSON.parse(localStorage.getItem('selectedTagIds') || '[]')
 
-            if ($(this).is(':checked')) {
-                if (tagId && typeof tagId === "string"){
-                    selectedTagIds.push(tagId);
+                if ($(this).is(':checked')) {
+                    if (tagId && typeof tagId === "string"){
+                        selectedTagIds.push(tagId);
+                    }
+                } else {
+                    selectedTagIds = selectedTagIds.filter(id => id !== tagId);
                 }
-            } else {
-                selectedTagIds = selectedTagIds.filter(id => id !== tagId);
-            }
-            // Store updated list in selectedTagIds in localStorage
-            localStorage.setItem('selectedTagIds', JSON.stringify(selectedTagIds))
-        })
-
-        let storedTagIds = JSON.parse(localStorage.getItem('selectedTagIds') || '[]');
-
-        if (storedTagIds) {
-            storedTagIds.map(function(tag) {
-                $(`input[type="checkbox"][id="tagFCheckbox+${tag}"]`).prop('checked', true);
+                // Store updated list in selectedTagIds in localStorage
+                localStorage.setItem('selectedTagIds', JSON.stringify(selectedTagIds))
             })
-        }
 
-        $('#filterButton').click(function() {
-            location.reload()
-        });
+            let storedTagIds = JSON.parse(localStorage.getItem('selectedTagIds') || '[]');
 
-    })
-</script>
+            if (storedTagIds) {
+                storedTagIds.map(function(tag) {
+                    $(`input[type="checkbox"][id="tagFCheckbox+${tag}"]`).prop('checked', true);
+                })
+            }
+
+            // Refresh the page to trigger the filtered data
+            $('#filterButton').click(function() {
+                location.reload()
+            });
+
+        })
+    </script>
+    
+

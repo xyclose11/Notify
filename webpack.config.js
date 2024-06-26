@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
-    entry: ['./wwwroot/ts/admin/userList.ts', './wwwroot/ts/Views/Note/noteViewChange.ts'],
+    entry: ['./wwwroot/ts/admin/userList.ts', './wwwroot/ts/Views/Note/filterActions.ts','./wwwroot/ts/Views/Note/noteViewChange.ts'],
     module: {
         rules: [{
             test: /\.tsx?$/,

@@ -30,29 +30,32 @@
         <!-- Where the partial views are rendered -->
 </div>
 
-
-<script>
-        $(document).ready(function() {
-                $('.delete-note').on('click', function() {
-                        const noteId = $(this).data('note-id');
-                        $.ajax({
-                                url: '/Note/Delete/' + noteId,
-                                type: 'POST',
-                                headers: {
-                                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                                },
-                                success: function(result) {
-                                        if (result.success) {
-                                                // Remove the note from the DOM
-                                                $(this).closest('.card').remove();
-                                        } else {
-                                                // Handle error
-                                                alert('Error deleting note.');
+@section Scripts
+{
+        <script>
+                $(document).ready(function() {
+                        $('.delete-note').on('click', function() {
+                                const noteId = $(this).data('note-id');
+                                $.ajax({
+                                        url: '/Note/Delete/' + noteId,
+                                        type: 'POST',
+                                        headers: {
+                                                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                                        },
+                                        success: function(result) {
+                                                if (result.success) {
+                                                        // Remove the note from the DOM
+                                                        $(this).closest('.card').remove();
+                                                } else {
+                                                        // Handle error
+                                                        alert('Error deleting note.');
+                                                }
                                         }
-                                }
-                                
+                                        
+                                });
                         });
                 });
-        });
-</script>
+        </script>
+}
+
 

@@ -1,7 +1,6 @@
 using System.Collections;
 using Microsoft.AspNetCore.Mvc;
 using NoteApp.Models;
-using System.Linq;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -127,6 +126,7 @@ namespace NoteApp.Controllers
         }
 
         // GET: Note/Edit/5
+        [HttpGet]
         public IActionResult Edit(Guid? id)
         {
             if (id == null)
@@ -145,43 +145,52 @@ namespace NoteApp.Controllers
         // POST: Note/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Guid id, [Bind("Id,Title,Body")] Note note)
+        public async Task<IActionResult> Edit([Bind("Id,Title,Body")] Note note)
         {
-            if (id != note.Id)
+            if (!ModelState.IsValid) return View(note);
+            var updatedNote = await _context.FindAsync<Note>(note.Id);
+
+            // Update each binded field
+            if (note.Title != null)
+            {
+                updatedNote.Title = note.Title;
+            }
+
+            if (note.Body != null)
+            {
+                updatedNote.Body = note.Body;
+            }
+            _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: Note/Delete/5
+        [HttpGet]
+        public IActionResult Delete(Guid? id)
+        {
+            if (id == null)
+            {
+                return BadRequest();
+            }
+
+            var note = _context.Notes.Find(id);
+            if (note == null)
             {
                 return NotFound();
             }
 
-            if (!ModelState.IsValid) return View(note);
-            _context.Update(note);
-            _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            return View(note);
         }
-
         
-
-        // POST: Note/Delete/5
-        [HttpPost]
+        // POST: /Note/Delete
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(Guid id)
+        public ActionResult DeleteConfirmed(Guid id)
         {
-            try
-            {
-                var note = _context.Notes.Find(id);
-                if (note == null)
-                {
-                    return Json(new { success = false });
-                }
-
-                _context.Notes.Remove(note);
-                _context.SaveChanges();
-
-                return Json(new { success = true });
-            }
-            catch
-            {
-                return Json(new { success = false });
-            }
+            var note = _context.Notes.Find(id);
+            _context.Notes.Remove(note);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
         }
         
         private IEnumerable<NoteViewModel> GetNoteViewModels(string userId, string category, int currentPage, List<Guid> selectedTags)

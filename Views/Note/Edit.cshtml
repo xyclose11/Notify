@@ -4,7 +4,7 @@
 
 <div class="row">
     <div class="col p-0">
-        @using (Html.BeginForm("Edit", "Note", FormMethod.Post))
+        @using (Html.BeginForm("Edit", "Note", FormMethod.Post, new { @id = "editNoteForm"}))
         {
             @Html.AntiForgeryToken()
             <div class="mb-4">
@@ -32,25 +32,35 @@
                     </div>
 
 
-                    <div class="form-floating m-3">
-                        <button type="submit" class="btn btn-success" value="save">Save Changes</button>
-                    </div>
+
 
                 </div>
 
 
             </div>
         }
-        <div class="btn btn-group-lg ms-2">
-            <button class="btn m-0 p-0">
-                <i class="bi bi-share-fill"></i>
-            </button>
-            <button class="btn m-0 p-0">
-                <i class="ms-3 me-3 bi bi-clipboard2-plus"></i>            
-            </button>
-            <button class="btn m-0 p-0">
-                <i class="bi bi-box-arrow-down"></i>            
-            </button>
+        
+        <div class="row">
+            <div class="col">
+                <!-- Extra Action Btns (Share, Copy, Download) -->
+                <div class="btn btn-group-lg ms-2">
+                    <button class="btn m-0 p-0">
+                        <i class="bi bi-share-fill"></i>
+                    </button>
+                    <button class="btn m-0 p-0">
+                        <i class="ms-3 me-3 bi bi-clipboard2-plus"></i>            
+                    </button>
+                    <button class="btn m-0 p-0">
+                        <i class="bi bi-box-arrow-down"></i>            
+                    </button>
+                </div>
+                
+            </div>
+            <div class="col-5">
+                <div class="form-floating mt-0 mb-0 me-3 text-end">
+                    <button type="submit" form="editNoteForm" class="btn btn-success" value="save">Save Changes</button>
+                </div>
+            </div>
         </div>
     </div>
 

@@ -1,0 +1,132 @@
+@model NoteApp.Models.ViewModels.Notes.NoteEditViewModel
+
+<div class="col-2 border border-secondary-subtle rounded-3 border-1" id="filterTagContainer">
+    <div class="row border border-1 m-1 rounded-3 border-secondary-subtle">
+        <h3>Actions</h3>
+    </div>
+    <div class="row m-1 rounded-3">
+        <!-- Displays the categories -->
+        <div class="dropdown-align-right p-0 d-block mx-auto">
+            <div class="form-floating m-1 p-0">
+                <select class="form-select" aria-label="Category Selector" id="categoryDropdown">
+                    <option></option>
+                </select>
+                <label for="categoryDropdown">Category</label>
+            </div>
+        </div>    
+    </div>
+
+    <div class="row border border-1 m-1 rounded-3 border-secondary-subtle">
+        <p>Groups!</p>
+    </div>
+
+    <div class="row border border-1 m-1 rounded-3 border-secondary-subtle">
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTagAction" aria-expanded="True" aria-controls="collapseTagAction">
+            Tags
+        </button>
+        <div id="collapseTagAction" class="collapse">
+            <div class="p-1 justify-content-evenly">
+                <div id="tagActionCBList" class="text-start">
+                    
+                    <!-- Only load the first 15 tags -->
+                    @{ var displayedTags = Model.Tags.Take(15); }
+                    <!-- Displays tags -->
+                    @foreach (var tag in displayedTags)
+                    {
+                        <div class="form-check form-check-inline text-start">
+                            <input class="form-check-input" type="checkbox" name="tagACheckbox" id="tagACheckbox+@tag.Id" value="@tag.Id"/>
+                            <label class="form-check-label" for="#tagActionCB+@tag.Id">@tag.Name</label>
+                        </div>
+                    }
+                </div>
+
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-primary" id="tagActionClearBtn">
+                        Clear
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="tagLoadMoreBtn">
+                        More Tags?
+                    </button>
+                </div>
+            </div>  
+        </div>
+    </div>
+    <button class="btn btn-secondary" id="filterButton" type="button">
+        Apply
+    </button>
+    
+</div>
+
+@* <script> *@
+@*     $(document).ready(function (){ *@
+@*         $(document).on('change', 'input[type="checkbox"][id^="tagACheckbox+"]', function() { *@
+@*             let tagId = $(this).val(); *@
+@*             let selectedTagIds = JSON.parse(localStorage.getItem('selectedTagIds') || '[]') *@
+@*             if ($(this).is(':checked')) { *@
+@*                 if (tagId && typeof tagId === "string"){ *@
+@*                     selectedTagIds.push(tagId); *@
+@*                 } *@
+@*             } else { *@
+@*                 selectedTagIds = selectedTagIds.filter(id => id !== tagId); *@
+@*             } *@
+@*             // Store updated list in selectedTagIds in localStorage *@
+@*             localStorage.setItem('selectedTagIds', JSON.stringify(selectedTagIds)) *@
+@* *@
+@*         }) *@
+@* *@
+@*         let storedTagIds = JSON.parse(localStorage.getItem('selectedTagIds') || '[]'); *@
+@* *@
+@*         if (storedTagIds) { *@
+@*             storedTagIds.map(function(tag) { *@
+@*                 $(`input[type="checkbox"][id="tagACheckbox+${tag}"]`).prop('checked', true); *@
+@*             }) *@
+@*         } *@
+@* *@
+@*         // Refresh the page to trigger the filtered data *@
+@*         $('#filterButton').click(function() { *@
+@*             location.reload() *@
+@*         }); *@
+@* *@
+@*     }) *@
+@* </script> *@
+
+
+<script>
+    $(document).ready(function () {
+        getCategories();
+    })
+
+    function getCategories() {
+        $.get('/Category/GetCategories', function (data) {
+            // Assuming the id of your dropdown list is 'categoryDropdown'
+            let dropdown = document.getElementById('categoryDropdown');
+
+            // Clear any existing options
+            dropdown.innerHTML = '';
+            let option = document.createElement('option');
+            option.value = "";
+            option.text = "";
+            dropdown.add(option);
+            // Add an option for each category
+            data.forEach(function(category) {
+                let option = document.createElement('option');
+                option.value = category.name;
+                option.text = (category.name);
+                dropdown.add(option);
+            });
+            
+            // Set the selected category to the value in localStorage, if it exists
+            var selectedCategory = localStorage.getItem('selectedCategory');
+            if (selectedCategory) {
+                dropdown.value = selectedCategory;
+            }
+
+        })
+    }
+    
+    document.getElementById('categoryDropdown').addEventListener('change', function() {
+        // When the selected category changes, store the new value in localStorage
+        localStorage.setItem('selectedCategory', this.value);
+        location.reload();
+    });
+</script>

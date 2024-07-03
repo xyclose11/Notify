@@ -125,6 +125,28 @@ namespace NoteApp.Controllers
             return View(note);
         }
 
+        private NoteEditViewModel GetNoteEditViewModel(Note note)
+        {
+            var userId = _userManager.GetUserId(User);
+            // Get categories
+            var categories = _context.Categories
+                .Where(cat => cat.WhoCreated == userId)
+                .ToList();
+
+            // Get tags
+            var tags = _context.Tags
+                .Where(tag => tag.WasCreatedBy == userId)
+                .ToList();
+            
+            var noteEditModel = new NoteEditViewModel
+            {
+                Note = note,
+                Categories = categories,
+                Tags = tags
+            };
+
+            return noteEditModel;
+        }
         // GET: Note/Edit/5
         [HttpGet]
         public IActionResult Edit(Guid? id)
@@ -139,7 +161,9 @@ namespace NoteApp.Controllers
             {
                 return NotFound();
             }
-            return View(note);
+
+            var noteEditViewModel = GetNoteEditViewModel(note);
+            return View(noteEditViewModel);
         }
 
         // POST: Note/Edit/5
@@ -147,7 +171,8 @@ namespace NoteApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([Bind("Id,Title,Body")] Note note)
         {
-            if (!ModelState.IsValid) return View(note);
+            
+            if (!ModelState.IsValid) return View(GetNoteEditViewModel(note));
             var updatedNote = await _context.FindAsync<Note>(note.Id);
 
             // Update each binded field

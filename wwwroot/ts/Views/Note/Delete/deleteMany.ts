@@ -18,14 +18,18 @@ document.addEventListener("DOMContentLoaded", function() {
             AjaxDeleteMany(selectedNotes)
         })
     })
-    
-    // SELECT ALL NEEDS MODIFICATION
-    // $('body').on('click','#noteDeleteSelected', function() {
-    //     var t = $('input[type="checkbox"][id^="noteCB+"]').prop("checked", true);
-    //     console.log(t)
-    // })
-})
 
+    $('body').on('change',`#selectAllNotesBtn`, function() {
+        const t = $('input[type="checkbox"][id^="noteCB+"]')
+
+        if (t.prop("checked") == true) {
+            t.prop("checked", false)
+        } else {
+            t.prop("checked", true);
+        }
+    })
+    
+})
 
 function AjaxDeleteMany(noteIds: string[]) {
     $.ajax({
@@ -35,10 +39,11 @@ function AjaxDeleteMany(noteIds: string[]) {
             noteIds: noteIds
         },
         success: function() {
-            $('#deleteManyNotesModal').show()
+            location.reload()
         },
         error: function(errorThrown) {
             console.log(errorThrown)
         }
     })
 }
+

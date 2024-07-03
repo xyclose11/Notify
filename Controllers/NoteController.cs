@@ -171,7 +171,6 @@ namespace NoteApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([Bind("Id,Title,Body")] Note note)
         {
-            
             if (!ModelState.IsValid) return View(GetNoteEditViewModel(note));
             var updatedNote = await _context.FindAsync<Note>(note.Id);
 
@@ -185,7 +184,49 @@ namespace NoteApp.Controllers
             {
                 updatedNote.Body = note.Body;
             }
+
+            if (note.CategoryId != null)
+            {
+                updatedNote.CategoryId = note.CategoryId;
+            }
             _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        //TODO ADD GROUP FEATURE TO THIS
+        [HttpPost]
+        public async Task<IActionResult> EditActions(Guid noteId, Guid? categoryId, List<Guid>? tagIds)
+        {
+            // Validate noteId
+            var updatedNote = await _context.Notes.FindAsync(noteId);
+            
+            if (updatedNote == null) return NotFound();
+            
+            // Validate category
+            if (categoryId != null)
+            {
+                var newCategory = await _context.Categories.FindAsync(categoryId);
+                updatedNote.Category = newCategory;
+                updatedNote.CategoryId = categoryId;
+            }
+
+            // if (tagIds.Count == 0)
+            // {
+            //     return RedirectToAction(nameof(Index));
+            // }
+            //
+            var newTags = await _context.Tags
+                .Where(tag => tagIds.Contains(tag.Id))
+                .ToListAsync();
+            
+            Console.WriteLine("NEWTAGS");
+            Console.WriteLine(newTags.Count);
+
+
+
+
+            await _context.SaveChangesAsync();
+            
             return RedirectToAction(nameof(Index));
         }
 

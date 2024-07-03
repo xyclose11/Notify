@@ -3,7 +3,8 @@ const path = require('path');
 
 module.exports = {
     entry: ['./wwwroot/ts/admin/userList.ts', './wwwroot/ts/Views/Note/filterActions.ts',
-        './wwwroot/ts/Views/Note/noteViewChange.ts', './wwwroot/ts/Views/Note/Delete/deleteMany.ts'],
+        './wwwroot/ts/Views/Note/noteViewChange.ts', './wwwroot/ts/Views/Note/Delete/deleteMany.ts',
+        './wwwroot/ts/Views/Note/Edit/editActions.ts'],
     module: {
         rules: [{
             test: /\.tsx?$/,

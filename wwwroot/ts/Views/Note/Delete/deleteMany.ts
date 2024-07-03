@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
         })
     })
 
+    // Select & deselect all btn
     $('body').on('change',`#selectAllNotesBtn`, function() {
         const t = $('input[type="checkbox"][id^="noteCB+"]')
 
@@ -42,7 +43,7 @@ function AjaxDeleteMany(noteIds: string[]) {
             location.reload()
         },
         error: function(errorThrown) {
-            console.log(errorThrown)
+            location.reload()            
         }
     })
 }

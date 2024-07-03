@@ -221,6 +221,11 @@ namespace NoteApp.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteManyConfirmation(List<Guid> noteIds)
         {
+            if (noteIds.Count == 0)
+            {
+                TempData["ErrorMessage"] = $"No notes selected";
+                return BadRequest();
+            }
             try
             {
                 foreach (var id in noteIds)

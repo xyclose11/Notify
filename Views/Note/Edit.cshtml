@@ -3,7 +3,7 @@
 <h1>Edit Note</h1>
 
 <div class="row">
-    <div class="col">
+    <div class="col p-0">
         @using (Html.BeginForm("Edit", "Note", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
@@ -18,21 +18,21 @@
                 <div class="form-group">
 
                     @*Header*@
-                    <div class="form-floating m-4">
+                    <div class="form-floating ms-3 me-3">
                         @Html.TextBoxFor(model => model.Note.Title, new { @class = "form-control" })
                         @Html.LabelFor(model => model.Note.Title)
                         @Html.ValidationMessageFor(model => model.Note.Title)
                     </div>
 
                     @*Body*@
-                    <div class="form-floating m-4">
+                    <div class="form-floating m-3">
                         @Html.TextAreaFor(model => model.Note.Body, new { @style = "red", @class = "form-control", rows = 12 })
                         @Html.LabelFor(model => model.Note.Body)
                         @Html.ValidationMessageFor(model => model.Note.Body)
                     </div>
 
 
-                    <div class="form-floating m-4">
+                    <div class="form-floating m-3">
                         <button type="submit" class="btn btn-success" value="save">Save Changes</button>
                     </div>
 
@@ -41,6 +41,17 @@
 
             </div>
         }
+        <div class="btn btn-group-lg ms-2">
+            <button class="btn m-0 p-0">
+                <i class="bi bi-share-fill"></i>
+            </button>
+            <button class="btn m-0 p-0">
+                <i class="ms-3 me-3 bi bi-clipboard2-plus"></i>            
+            </button>
+            <button class="btn m-0 p-0">
+                <i class="bi bi-box-arrow-down"></i>            
+            </button>
+        </div>
     </div>
 
     @await Html.PartialAsync("EditPartial/_EditSidebar")

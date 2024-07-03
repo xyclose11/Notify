@@ -21,7 +21,10 @@
         <tr>
             <th scope="col">
                 Select
-                <button class="btn btn-primary" data-bs-target="#deleteManyNotesModal" data-bs-toggle="modal" type="submit" id="noteDeleteSelected" aria-label="Delete Selected">Delete Selected</button>
+                <div class="form-floating">
+                    <button class="btn btn-primary" data-bs-target="#deleteManyNotesModal" data-bs-toggle="modal" type="submit" id="noteDeleteSelected" aria-label="Delete Selected">Delete Selected</button>
+                    <input type="checkbox" id="selectAllNotesBtn">Select All</input>
+                </div>
             </th>
 
             <th scope="col">Title</th>

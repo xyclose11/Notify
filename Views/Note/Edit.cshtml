@@ -26,7 +26,7 @@
 
                     @*Body*@
                     <div class="form-floating m-3">
-                        @Html.TextAreaFor(model => model.Note.Body, new { @style = "red", @class = "form-control", rows = 12 })
+                        @Html.TextAreaFor(model => model.Note.Body, new { @style = "height:350px", @class = "form-control", @rows = 50 })
                         @Html.LabelFor(model => model.Note.Body)
                         @Html.ValidationMessageFor(model => model.Note.Body)
                     </div>

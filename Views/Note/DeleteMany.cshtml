@@ -1,0 +1,14 @@
+@model List<NoteApp.Models.Note>
+
+<h1>Delete Multiple</h1>
+<ul>
+    @foreach (var note in Model)
+    {
+        <li class="">@note.Title</li>
+    }
+</ul>
+
+@using (Html.BeginForm())
+{
+    <input type="submit" value="Delete"/>
+}

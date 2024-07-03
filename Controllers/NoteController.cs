@@ -193,6 +193,60 @@ namespace NoteApp.Controllers
             return RedirectToAction("Index");
         }
         
+        // POST: /Note/DeleteMany
+        [HttpGet]
+        public IActionResult DeleteMany(List<string> noteIds)
+        {
+            var noteList = new List<Note> { };
+            foreach (var id in noteIds)
+            {
+                Console.WriteLine(id);
+                if (id == null)
+                {
+                    return BadRequest();
+                }
+
+                var note = _context.Notes.Find(id);
+                if (note == null)
+                {
+                    return NotFound();
+                }
+                
+                noteList.Add(note);
+            }
+
+
+            return PartialView("DeleteManyPartial/_DeleteMany", noteList);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteManyConfirmation(List<Guid> noteIds)
+        {
+            Console.WriteLine("THIS ISATEST");
+            try
+            {
+                foreach (var id in noteIds)
+                {
+                    var note = await _context.Notes.FindAsync(id);
+                    if (note == null)
+                    {
+                        Console.WriteLine("Note does not exist");
+                        return NotFound();
+                    }
+                    _context.Notes.Remove(note);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+  
+            TempData["SuccessMessage"] = $"Notes were deleted.";           
+            return RedirectToAction("Index");
+        }
         private IEnumerable<NoteViewModel> GetNoteViewModels(string userId, string category, int currentPage, List<Guid> selectedTags)
         {
 

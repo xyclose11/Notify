@@ -114,6 +114,7 @@
     <ItemGroup>
       <TypeScriptCompile Include="wwwroot\ts\admin\navigation.ts" />
       <TypeScriptCompile Include="wwwroot\ts\admin\userList.ts" />
+      <TypeScriptCompile Include="wwwroot\ts\Views\Note\Delete\deleteMany.ts" />
       <TypeScriptCompile Include="wwwroot\ts\Views\Note\filterActions.ts" />
       <TypeScriptCompile Include="wwwroot\ts\Views\Note\noteViewChange.ts" />
     </ItemGroup>

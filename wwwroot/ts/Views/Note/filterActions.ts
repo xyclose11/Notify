@@ -1,5 +1,3 @@
-import $ from "jquery";
-
 $(document).ready(() => {
     // Clear checkboxes for tag filtering
     $(document).on('click', "#tagFilterClearBtn", function(){

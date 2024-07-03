@@ -200,7 +200,6 @@ namespace NoteApp.Controllers
             var noteList = new List<Note> { };
             foreach (var id in noteIds)
             {
-                Console.WriteLine(id);
                 if (id == null)
                 {
                     return BadRequest();
@@ -222,7 +221,6 @@ namespace NoteApp.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteManyConfirmation(List<Guid> noteIds)
         {
-            Console.WriteLine("THIS ISATEST");
             try
             {
                 foreach (var id in noteIds)

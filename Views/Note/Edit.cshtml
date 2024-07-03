@@ -56,9 +56,17 @@
                 </div>
                 
             </div>
-            <div class="col-5">
-                <div class="form-floating mt-0 mb-0 me-3 text-end">
-                    <button type="submit" form="editNoteForm" class="btn btn-success" value="save">Save Changes</button>
+            <div class="col-7 text-end me-3">
+                <div class="btn-group btn-group-sm">
+                    <div class="form-floating rounded-end-0">
+                        <button type="submit" class="btn btn-danger rounded-start-3 rounded-end-0" value="delete">Delete Note</button>
+                    </div>
+                    <div class="form-floating rounded-0">
+                        <button type="submit" asp-action="Index" asp-controller="Note" class="btn btn-secondary rounded-0" value="cancel">Cancel</button>
+                    </div>
+                    <div class="form-floating rounded-start-0">
+                        <button type="submit" form="editNoteForm" class="btn btn-success rounded-start-0 rounded-end-3" value="save">Save Changes</button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -217,13 +217,28 @@ namespace NoteApp.Controllers
                 updatedNote.Category = newCategory;
                 updatedNote.CategoryId = categoryId;
             }
-            
-
             if (tagIds.Count > 0)
             {
-                // Keep already applied tags
+                // Remove old tags
                 // Apply new tags
-                
+
+     
+                var noteTags = _context.NoteTags
+                    .Where(nt => nt.NoteId == noteId)
+                    .ToList(); // Contains all tags applied to the current Note
+
+                foreach (var noteTag in noteTags)
+                {
+                    if (tagIds.Contains(noteTag.TagId)) continue; // If tagIds does NOT contain the tag in the db remove it from the db
+                    Console.WriteLine("REMOVE");
+                    await RemoveTagFromNote(noteTag.TagId, noteId);
+
+                }
+
+                await AddTagToNote(tagIds, noteId);
+
+
+
             }
             
 
@@ -502,12 +517,15 @@ namespace NoteApp.Controllers
         public async Task<IActionResult> AddTagToNote(List<Guid> selectedTags, Guid noteId)
         {
             var note = await _context.Notes.FindAsync(noteId);
-
+            var noteTags = await _context.NoteTags
+                .Where(nt => nt.NoteId == noteId)
+                .ToListAsync();
+            Console.WriteLine($"This is the amount of note tags: {noteTags.Count()}");
             if (note == null)
             {
                 return NotFound();
             }
-            foreach (var Id in selectedTags)
+            foreach (var Id in selectedTags) // For each tag in selectedTags
             {
                 var tag = await _context.Tags.FindAsync(Id);
                 if (tag == null)
@@ -515,9 +533,10 @@ namespace NoteApp.Controllers
                     TempData["ErrorMessage"] = $"{tag.Name} Was not found.";           
                     ModelState.AddModelError("Name", "Tag Name not found.");
                 }
-
-                if (note.NoteTags.All(nt => nt.TagId != Id))
+                
+                if (noteTags.All(nt => nt.TagId != Id)) // True if the tagId != any other tagId
                 {
+
                     tag.NoteTags.Add(new NoteTag{ Note = note, Tag = tag});
                     
                     // Update tag noteCount by 1
@@ -525,8 +544,9 @@ namespace NoteApp.Controllers
                 }
                 else
                 {
+                    // RemoveTagFromNote(Id, noteId);
+                    Console.WriteLine("HIT!");
                     TempData["ErrorMessage"] = $"{tag.Name} Already Exists.";           
-
                     ModelState.AddModelError("Name", "Tag already exists.");
                 }
             }

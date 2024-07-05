@@ -2,15 +2,25 @@ $(document).ready(function () {
         getCategories();
 
         $('#editActionSubmit').on('click', function() {
-            'input[type="checkbox"][id^="tagFCheckbox+"]'
             const noteId = $('#Note_Id').val()
             const categoryId = <string | undefined>$('#categoryEditDropdown').find(':selected').val()
-            
+            // Event delegation to ensure child elements can still be selected
+            let selectedTags: string[] = new Array;
+
+            // Add each selected checkbox and add it to the Array
+            $('#tagActionCBList input:checked').each(function(){
+                const id = $(this).attr('id');
+                if (typeof(id) == "string") {
+                    selectedTags.push(id.slice(13));
+                }
+            })
+
             if (noteId !== null && typeof noteId == "string") {
-                updateNoteActions(noteId, categoryId);
+                updateNoteActions(noteId, categoryId, selectedTags);
             }
         })
 })
+
 
 function getCategories() {
     $.ajax({

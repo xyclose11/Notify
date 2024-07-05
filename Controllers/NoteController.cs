@@ -138,11 +138,19 @@ namespace NoteApp.Controllers
                 .Where(tag => tag.WasCreatedBy == userId)
                 .ToList();
             
+            // Get tags that are applied to the note
+            var appliedTags = _context.NoteTags
+                .Where(nt => nt.NoteId == note.Id)
+                .Select(appliedTag => appliedTag.Tag)
+                .ToList();
+
+
             var noteEditModel = new NoteEditViewModel
             {
                 Note = note,
                 Categories = categories,
-                Tags = tags
+                Tags = tags,
+                AppliedTags = appliedTags,
             };
 
             return noteEditModel;
@@ -195,7 +203,7 @@ namespace NoteApp.Controllers
 
         //TODO ADD GROUP FEATURE TO THIS
         [HttpPost]
-        public async Task<IActionResult> EditActions(Guid noteId, Guid? categoryId, List<Guid>? tagIds)
+        public async Task<IActionResult> EditActions(Guid noteId, Guid? categoryId, List<Guid>? tagIds, bool? isPublic)
         {
             // Validate noteId
             var updatedNote = await _context.Notes.FindAsync(noteId);
@@ -209,21 +217,21 @@ namespace NoteApp.Controllers
                 updatedNote.Category = newCategory;
                 updatedNote.CategoryId = categoryId;
             }
-
-            // if (tagIds.Count == 0)
-            // {
-            //     return RedirectToAction(nameof(Index));
-            // }
-            //
-            var newTags = await _context.Tags
-                .Where(tag => tagIds.Contains(tag.Id))
-                .ToListAsync();
             
-            Console.WriteLine("NEWTAGS");
-            Console.WriteLine(newTags.Count);
 
+            if (tagIds.Count > 0)
+            {
+                // Keep already applied tags
+                // Apply new tags
+                
+            }
+            
 
-
+            // TODO Change isPublic to regular setter
+            // if (isPublic != null)
+            // {
+            //     updatedNote.IsPublic = isPublic;
+            // }
 
             await _context.SaveChangesAsync();
             

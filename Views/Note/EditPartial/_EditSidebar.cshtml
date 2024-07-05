@@ -37,9 +37,18 @@
                     @foreach (var tag in displayedTags)
                     {
                         <div class="form-check form-check-inline text-start">
-                            <input class="form-check-input" type="checkbox" name="tagACheckbox" id="tagACheckbox+@tag.Id" value="@tag.Id"/>
-                            <label class="form-check-label" for="#tagActionCB+@tag.Id">@tag.Name</label>
+
+                            @if (Model.AppliedTags.Contains(tag))
+                            {
+                                <input class="form-check-input" type="checkbox" name="tagACheckbox" id="tagACheckbox+@tag.Id" value="@tag.Id" checked="checked"/>
+                            }
+                            else
+                            {
+                                <input class="form-check-input" type="checkbox" name="tagACheckbox" id="tagACheckbox+@tag.Id" value="@tag.Id"/>
+                            }
+                        <label class="form-check-label" for="#tagActionCB+@tag.Id">@tag.Name</label>
                         </div>
+
                     }
                 </div>
 

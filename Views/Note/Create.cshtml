@@ -14,12 +14,14 @@
         <div class="form-floating m-4">
             @Html.TextBoxFor(model => model.Title, new { @class="form-control"})
             @Html.LabelFor(model => model.Title)
+            @Html.ValidationMessageFor(model => model.Title)
         </div>
         
         @*Description*@
         <div class="form-floating m-4">
             @Html.TextAreaFor(model => model.Body, new { @style = "height:350px", @class = "form-control", @rows = 50})
             @Html.LabelFor(model => model.Body)
+            @Html.ValidationMessageFor(model => model.Body)
         </div>
         
         @*Category*@
@@ -32,7 +34,7 @@
         @*Tags*@
         <div class="form-group">
             <label asp-for="NoteTags" class="control-label"></label>
-            <select asp-for="NoteTags" name="selectedTags" class="form-control" asp-items="ViewBag.Tags" multiple></select>
+            <select asp-for="NoteTags" name="selectedTags" class="form-control" asp-items="ViewBag.UserOwnedTags" multiple></select>
             <a asp-action="Create" asp-controller="Tag">Add Tag</a>
         </div>
 

@@ -4,6 +4,7 @@ using NoteApp.Models;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NoteApp.Helpers;
@@ -75,8 +76,13 @@ namespace NoteApp.Controllers
         {
             // Pass all the categories to the view in a dropdown list
             ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name");
-            ViewBag.UserOwnedTags = new SelectList(_context.NoteTags
-                .Where(tag => tag.Tag.WasCreatedBy == _userManager.GetUserId(User)), "Id", "Name");
+            var userId = _userManager.GetUserId(User);
+            var ownedTags = _context.Tags
+                .Where(tag => tag.WasCreatedBy == userId)
+                .ToList();
+            
+            ViewBag.UserOwnedTags = new SelectList(ownedTags, "Id", "Name");
+            Console.WriteLine($"OWNED{ownedTags.Count}");
             return View();
         }
 
@@ -117,10 +123,18 @@ namespace NoteApp.Controllers
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
+            else
+            {
+                IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in allErrors)
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
+            }
             // If the model state is not valid, repopulate the categories and return the view
             ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name");
-            ViewBag.UserOwnedTags = new SelectList(_context.NoteTags
-                .Where(tag => tag.Tag.WasCreatedBy == _userManager.GetUserId(User)), "Id", "Name");
+            // ViewBag.UserOwnedTags = new SelectList(_context.NoteTags
+            //     .Where(tag => tag.Tag.WasCreatedBy == _userManager.GetUserId(User)), "Id", "Name");
 
             return View(note);
         }

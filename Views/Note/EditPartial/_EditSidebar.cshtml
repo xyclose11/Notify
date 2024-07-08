@@ -42,8 +42,8 @@
             <div class="p-1 justify-content-evenly">
                 <div id="tagActionCBList" class="text-start">
 
-                    <!-- Only load the first 15 tags -->
-                    @{ var displayedTags = Model.Tags.Take(15); }
+                    <!-- Only load the first 5 tags -->
+                    @{ var displayedTags = Model.Tags.Take(5); }
                     <!-- Displays tags -->
                     @foreach (var tag in displayedTags)
                     {

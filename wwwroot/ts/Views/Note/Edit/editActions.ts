@@ -18,6 +18,15 @@ $(document).ready(function () {
                 updateNoteActions(noteId, categoryId, selectedTags);
             }
         })
+
+        $(document).on('click', '#tagLoadMoreBtn', () => {
+            const currentTagCount: number = $('input[type="checkbox"][id^="tagACheckbox+"]').length;
+            $.get('/Tag/LoadMoreTags/', { currentTagCount: currentTagCount }, (data) => {
+                data.forEach(function (tag: {name: string, id: string}) {
+                    addTagToActionCB(tag);
+                })
+            })
+        });
 })
 
 
@@ -71,5 +80,17 @@ const appendAlert = (message: string, type: string) => {
 const alertTrigger = document.getElementById('editActionSubmit')
 
 
+function addTagToActionCB(tag: {name: string, id: string}) {
+    // Get previously selected tags
+    let storedTagIds = JSON.parse(localStorage.getItem('selectedTagIds') || '[]');
 
+    const containerElem = $('#tagActionCBList');
+    const divT = $('<div/>', { class: "form-check form-check-inline"}).appendTo(containerElem);
+    const inputT = $('<input />', { class: "form-check-input", type: 'checkbox', name: "tagACheckbox" , id: `tagACheckbox+${tag.id}`, value: tag.id,
+        checked: storedTagIds.includes(tag.id)});
+    const labelT = $('<label />', { class: "form-check-label", 'for': `#tagActionCB+${tag.id}`, text: tag.name });
+
+    divT.append(inputT, labelT);
+    divT.appendTo(containerElem);
+}
 

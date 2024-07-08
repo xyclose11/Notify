@@ -79,9 +79,7 @@ function updateNoteActions(noteId: string, categoryId?: string, tagIds?: string[
         },
         error: function(errorThrown) {
             if (alertTrigger) {
-                alertTrigger.addEventListener('click', () => {
-                    appendAlert('Error, changes have not been saved', "danger")
-                })
+                appendAlert('Error, changes have not been saved', "danger")
             }
 
         }

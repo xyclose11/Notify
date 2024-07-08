@@ -142,14 +142,14 @@ namespace NoteApp.Controllers
                 .Where(nt => nt.NoteId == note.Id)
                 .Select(appliedTag => appliedTag.Tag)
                 .ToList();
-
-
+            
             var noteEditModel = new NoteEditViewModel
             {
                 Note = note,
                 Categories = categories,
                 Tags = tags,
                 AppliedTags = appliedTags,
+                IsPublic = note.IsPublic
             };
 
             return noteEditModel;
@@ -242,11 +242,10 @@ namespace NoteApp.Controllers
             }
             
 
-            // TODO Change isPublic to regular setter
-            // if (isPublic != null)
-            // {
-            //     updatedNote.IsPublic = isPublic;
-            // }
+            if (isPublic.HasValue)
+            {
+                updatedNote.IsPublic = isPublic.Value;
+            }
 
             await _context.SaveChangesAsync();
             

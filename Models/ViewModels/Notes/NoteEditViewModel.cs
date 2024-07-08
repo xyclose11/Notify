@@ -7,6 +7,7 @@ public class NoteEditViewModel
     public IList<Category> Categories { get; set; }
     
     public IList<Tag> AppliedTags { get; set; }
+    public bool IsPublic { get; set; }
     // TBA
     //public IList<Group>
 }

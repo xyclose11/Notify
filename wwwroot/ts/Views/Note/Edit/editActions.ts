@@ -5,7 +5,7 @@ $(document).ready(function () {
             const categoryId = <string | undefined>$('#categoryEditDropdown').find(':selected').val()
             // Event delegation to ensure child elements can still be selected
             let selectedTags: string[] = new Array;
-
+            const isPublic = $('#isPublicCBEdit').is(':checked')
             // Add each selected checkbox and add it to the Array
             $('#tagActionCBList input:checked').each(function(){
                 const id = $(this).attr('id');
@@ -15,7 +15,7 @@ $(document).ready(function () {
             })
 
             if (noteId !== null && typeof noteId == "string") {
-                updateNoteActions(noteId, categoryId, selectedTags);
+                updateNoteActions(noteId, categoryId, selectedTags, isPublic);
             }
         })
 
@@ -35,7 +35,7 @@ $(document).ready(function () {
 })
 
 
-function updateNoteActions(noteId: string, categoryId?: string, tagIds?: string[] ) {
+function updateNoteActions(noteId: string, categoryId?: string, tagIds?: string[], isPublic?: boolean ) {
     $.ajax({
         url: "/Note/EditActions/",
         type: "post",
@@ -43,6 +43,7 @@ function updateNoteActions(noteId: string, categoryId?: string, tagIds?: string[
             noteId: noteId,
             categoryId: categoryId,
             tagIds: tagIds,
+            isPublic: isPublic
         },
         success: function(data) {
             // Display success alert box thing

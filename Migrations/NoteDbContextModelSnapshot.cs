@@ -102,7 +102,7 @@ namespace NoteApp.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("NoteTags");
+                    b.ToTable("NoteTags", (string)null);
                 });
 
             modelBuilder.Entity("NoteApp.Models.Tag", b =>

@@ -27,5 +27,5 @@ public class Note
     public IList<NoteTag> NoteTags { get; set; } = new List<NoteTag>();
     
     [Required]
-    public bool IsPublic { get; init; } = false;
+    public bool IsPublic { get; set; } = false;
 }

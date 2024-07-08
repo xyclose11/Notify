@@ -1,5 +1,3 @@
-import $, {post} from 'jquery';
-
 $('.delete-user-form').off('submit').on('submit', function(event: JQuery.SubmitEvent<HTMLElement>) {
     const $form = $(this).closest('form');
     console.log($form)

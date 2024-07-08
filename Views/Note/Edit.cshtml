@@ -1,29 +1,92 @@
-@model NoteApp.Models.Note
+@model NoteApp.Models.ViewModels.Notes.NoteEditViewModel
 
-<h1>Edit Note</h1>
 
-@using (Html.BeginForm())
-{
-    
-<div class="mb-4">
-    @*Header*@
-    <div class="form-floating m-4">
-        @Html.TextBoxFor(model => model.Title, new { @class="form-control"})
-        @Html.LabelFor(model => model.Title)
+<!-- Alert Section -->
+<div class="row">
+    <div class="col-3">
+        <h1>Edit Note</h1>
     </div>
-        
-    @*Body*@
-    <div class="form-floating m-4">
-        @Html.TextAreaFor(model => model.Body, new { @style = "red", @class="form-control" ,rows=3})
-        @Html.LabelFor(model => model.Body)
-    </div>
-
-
-    <div class="form-floating m-4">
-        <button type="submit" class="btn btn-success" value="Save">Create</button>
-            
+    <div class="col-7">
+        <div id="liveAlertPlaceholder"></div>
     </div>
 </div>
-}
+
+<div class="row">
+    <div class="col p-0">
+        @using (Html.BeginForm("Edit", "Note", FormMethod.Post, new { @id = "editNoteForm"}))
+        {
+            @Html.AntiForgeryToken()
+            <div class="mb-4">
+                @Html.ValidationSummary(true)
+                @Html.HiddenFor(model => model.Note.Id)
+                @Html.HiddenFor(model => model.Note.IsOwnedBy)
+                @Html.HiddenFor(model => model.Note.CreatedAt)
+                @Html.HiddenFor(model => model.Note.UpdatedAt)
+                @Html.HiddenFor(model => model.Note.CategoryId)
+                @Html.HiddenFor(model => model.Note.IsPublic)
+                <div class="form-group">
+
+                    @*Header*@
+                    <div class="form-floating ms-3 me-3">
+                        @Html.TextBoxFor(model => model.Note.Title, new { @class = "form-control" })
+                        @Html.LabelFor(model => model.Note.Title)
+                        @Html.ValidationMessageFor(model => model.Note.Title)
+                    </div>
+
+                    @*Body*@
+                    <div class="form-floating m-3">
+                        @Html.TextAreaFor(model => model.Note.Body, new { @style = "height:350px", @class = "form-control", @rows = 50 })
+                        @Html.LabelFor(model => model.Note.Body)
+                        @Html.ValidationMessageFor(model => model.Note.Body)
+                    </div>
+
+                </div>
+
+
+            </div>
+        }
+        
+        <div class="row">
+            <div class="col">
+                <!-- Extra Action Btns (Share, Copy, Download) -->
+                <div class="btn btn-group-lg ms-2">
+                    <button class="btn m-0 p-0">
+                        <i class="bi bi-share-fill"></i>
+                    </button>
+                    <button class="btn m-0 p-0">
+                        <i class="ms-3 me-3 bi bi-clipboard2-plus"></i>            
+                    </button>
+                    <button class="btn m-0 p-0">
+                        <i class="bi bi-box-arrow-down"></i>            
+                    </button>
+                </div>
+                
+            </div>
+            <div class="col-7 text-end me-3">
+                <div class="btn-group btn-group-sm">
+                    <div class="form-floating rounded-end-0">
+                        <form action="/Note/Delete" method="get">
+                            <input type="hidden" value="@Model.Note.Id" name="id"/>
+                            <button type="submit" class="btn btn-danger rounded-start-3 rounded-end-0" value="delete">Delete Note</button>
+                        </form>
+                    </div>
+                    <div class="form-floating rounded-0">
+                        @using (Html.BeginForm("Index", "Note"))
+                        {
+                            <input class="btn btn-secondary rounded-0" type="submit" value="Cancel" />
+                        }
+                    </div>
+                    <div class="form-floating rounded-start-0">
+                        <button type="submit" form="editNoteForm" class="btn btn-success rounded-start-0 rounded-end-3" value="save">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("EditPartial/_EditSidebar")
+
+</div>
+
 
 

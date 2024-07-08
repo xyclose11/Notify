@@ -28,7 +28,7 @@
             <div class="p-1 justify-content-evenly">
                 <div id="tagFilterCBList" class="text-start">
                     
-                <!-- Only load the first 15 tags -->
+                <!-- Only load the first 5 tags -->
                 @{ var displayedTags = Model.Take(5); }
                 <!-- Displays tags in filter sidebar -->
                 @foreach (var tag in displayedTags)

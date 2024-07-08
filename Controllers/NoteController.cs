@@ -1,7 +1,6 @@
 using System.Collections;
 using Microsoft.AspNetCore.Mvc;
 using NoteApp.Models;
-using System.Linq;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -126,7 +125,37 @@ namespace NoteApp.Controllers
             return View(note);
         }
 
+        private NoteEditViewModel GetNoteEditViewModel(Note note)
+        {
+            var userId = _userManager.GetUserId(User);
+            // Get categories
+            var categories = _context.Categories
+                .ToList();
+
+            // Get tags
+            var tags = _context.Tags
+                .Where(tag => tag.WasCreatedBy == userId)
+                .ToList();
+            
+            // Get tags that are applied to the note
+            var appliedTags = _context.NoteTags
+                .Where(nt => nt.NoteId == note.Id)
+                .Select(appliedTag => appliedTag.Tag)
+                .ToList();
+
+
+            var noteEditModel = new NoteEditViewModel
+            {
+                Note = note,
+                Categories = categories,
+                Tags = tags,
+                AppliedTags = appliedTags,
+            };
+
+            return noteEditModel;
+        }
         // GET: Note/Edit/5
+        [HttpGet]
         public IActionResult Edit(Guid? id)
         {
             if (id == null)
@@ -139,51 +168,193 @@ namespace NoteApp.Controllers
             {
                 return NotFound();
             }
-            return View(note);
+
+            var noteEditViewModel = GetNoteEditViewModel(note);
+            return View(noteEditViewModel);
         }
 
         // POST: Note/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Guid id, [Bind("Id,Title,Body")] Note note)
+        public async Task<IActionResult> Edit([Bind("Id,Title,Body")] Note note)
         {
-            if (id != note.Id)
+            if (!ModelState.IsValid) return View(GetNoteEditViewModel(note));
+            var updatedNote = await _context.FindAsync<Note>(note.Id);
+
+            // Update each binded field
+            if (note.Title != null)
+            {
+                updatedNote.Title = note.Title;
+            }
+
+            if (note.Body != null)
+            {
+                updatedNote.Body = note.Body;
+            }
+
+            if (note.CategoryId != null)
+            {
+                updatedNote.CategoryId = note.CategoryId;
+            }
+            _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        //TODO ADD GROUP FEATURE TO THIS
+        [HttpPost]
+        public async Task<IActionResult> EditActions(Guid noteId, Guid? categoryId, List<Guid>? tagIds, bool? isPublic)
+        {
+            // Validate noteId
+            var updatedNote = await _context.Notes.FindAsync(noteId);
+            
+            if (updatedNote == null) return NotFound();
+            
+            // Validate category
+            if (categoryId != null)
+            {
+                var newCategory = await _context.Categories.FindAsync(categoryId);
+                updatedNote.Category = newCategory;
+                updatedNote.CategoryId = categoryId;
+            }
+            if (tagIds.Count > 0)
+            {
+                var noteTags = _context.NoteTags
+                    .Where(nt => nt.NoteId == noteId)
+                    .ToList(); // Contains all tags applied to the current Note
+
+                foreach (var noteTag in noteTags)
+                {
+                    if (tagIds.Contains(noteTag.TagId)) continue; // If tagIds does NOT contain the tag in the db remove it from the db
+                    await RemoveTagFromNote(noteTag.TagId, noteId);
+                }
+
+                await AddTagToNote(tagIds, noteId);
+
+
+
+            }
+
+            if (tagIds.Count == 0)
+            {
+                // Remove all tags
+                Console.WriteLine("HIT");
+                await RemoveAllTagsFromNote(noteId);
+            }
+            
+
+            // TODO Change isPublic to regular setter
+            // if (isPublic != null)
+            // {
+            //     updatedNote.IsPublic = isPublic;
+            // }
+
+            await _context.SaveChangesAsync();
+            
+            return RedirectToAction(nameof(Index));
+        }
+
+        private async Task<IActionResult> RemoveAllTagsFromNote(Guid noteId)
+        {
+            var noteTags = await _context.NoteTags
+                .Where(nt => nt.NoteId == noteId)
+                .ToListAsync();
+            
+            if (noteTags.Count == 0)
+            {
+                return NotFound();
+            }
+            _context.NoteTags.RemoveRange(noteTags);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        // POST: Note/Delete/5
+        [HttpGet]
+        public IActionResult Delete(Guid? id)
+        {
+            if (id == null)
+            {
+                return BadRequest();
+            }
+
+            var note = _context.Notes.Find(id);
+            if (note == null)
             {
                 return NotFound();
             }
 
-            if (!ModelState.IsValid) return View(note);
-            _context.Update(note);
-            _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            return View(note);
         }
-
         
-
-        // POST: Note/Delete/5
-        [HttpPost]
+        // POST: /Note/Delete
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(Guid id)
+        public ActionResult DeleteConfirmed(Guid id)
         {
-            try
+            var note = _context.Notes.Find(id);
+            _context.Notes.Remove(note);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+        
+        // POST: /Note/DeleteMany
+        [HttpGet]
+        public IActionResult DeleteMany(List<string> noteIds)
+        {
+            var noteList = new List<Note> { };
+            foreach (var id in noteIds)
             {
+                if (id == null)
+                {
+                    return BadRequest();
+                }
+
                 var note = _context.Notes.Find(id);
                 if (note == null)
                 {
-                    return Json(new { success = false });
+                    return NotFound();
+                }
+                
+                noteList.Add(note);
+            }
+
+
+            return PartialView("DeleteManyPartial/_DeleteMany", noteList);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteManyConfirmation(List<Guid> noteIds)
+        {
+            if (noteIds.Count == 0)
+            {
+                TempData["ErrorMessage"] = $"No notes selected";
+                return BadRequest();
+            }
+            try
+            {
+                foreach (var id in noteIds)
+                {
+                    var note = await _context.Notes.FindAsync(id);
+                    if (note == null)
+                    {
+                        Console.WriteLine("Note does not exist");
+                        return NotFound();
+                    }
+                    _context.Notes.Remove(note);
                 }
 
-                _context.Notes.Remove(note);
-                _context.SaveChanges();
-
-                return Json(new { success = true });
+                await _context.SaveChangesAsync();
             }
-            catch
+            catch (Exception e)
             {
-                return Json(new { success = false });
+                Console.WriteLine(e);
+                throw;
             }
+  
+            TempData["SuccessMessage"] = $"Notes were deleted.";           
+            return RedirectToAction("Index");
         }
-        
         private IEnumerable<NoteViewModel> GetNoteViewModels(string userId, string category, int currentPage, List<Guid> selectedTags)
         {
 
@@ -362,12 +533,15 @@ namespace NoteApp.Controllers
         public async Task<IActionResult> AddTagToNote(List<Guid> selectedTags, Guid noteId)
         {
             var note = await _context.Notes.FindAsync(noteId);
-
+            var noteTags = await _context.NoteTags
+                .Where(nt => nt.NoteId == noteId)
+                .ToListAsync();
+            Console.WriteLine($"This is the amount of note tags: {noteTags.Count()}");
             if (note == null)
             {
                 return NotFound();
             }
-            foreach (var Id in selectedTags)
+            foreach (var Id in selectedTags) // For each tag in selectedTags
             {
                 var tag = await _context.Tags.FindAsync(Id);
                 if (tag == null)
@@ -375,9 +549,10 @@ namespace NoteApp.Controllers
                     TempData["ErrorMessage"] = $"{tag.Name} Was not found.";           
                     ModelState.AddModelError("Name", "Tag Name not found.");
                 }
-
-                if (note.NoteTags.All(nt => nt.TagId != Id))
+                
+                if (noteTags.All(nt => nt.TagId != Id)) // True if the tagId != any other tagId
                 {
+
                     tag.NoteTags.Add(new NoteTag{ Note = note, Tag = tag});
                     
                     // Update tag noteCount by 1
@@ -386,7 +561,6 @@ namespace NoteApp.Controllers
                 else
                 {
                     TempData["ErrorMessage"] = $"{tag.Name} Already Exists.";           
-
                     ModelState.AddModelError("Name", "Tag already exists.");
                 }
             }

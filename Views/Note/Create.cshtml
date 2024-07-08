@@ -29,6 +29,7 @@
             <label asp-for="CategoryId" class="control-label"></label>
             <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories"></select>
             <a asp-action="Create" asp-controller="Category">Category +</a>
+            @Html.ValidationMessageFor(model => model.CategoryId)
         </div>
 
         @*Tags*@
@@ -36,6 +37,8 @@
             <label asp-for="NoteTags" class="control-label"></label>
             <select asp-for="NoteTags" name="selectedTags" class="form-control" asp-items="ViewBag.UserOwnedTags" multiple></select>
             <a asp-action="Create" asp-controller="Tag">Add Tag</a>
+            @Html.ValidationMessageFor(model => model.NoteTags)
+
         </div>
 
         @*IsPublic*@
@@ -43,6 +46,7 @@
         <div class="form-group">
             @Html.CheckBoxFor(model => model.IsPublic) 
             @Html.LabelFor(model => model.IsPublic)
+            @Html.ValidationMessageFor(model => model.IsPublic)
         </div>
         
         <div class="form-floating m-4">

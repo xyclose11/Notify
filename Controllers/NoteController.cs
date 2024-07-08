@@ -82,7 +82,6 @@ namespace NoteApp.Controllers
                 .ToList();
             
             ViewBag.UserOwnedTags = new SelectList(ownedTags, "Id", "Name");
-            Console.WriteLine($"OWNED{ownedTags.Count}");
             return View();
         }
 
@@ -133,8 +132,13 @@ namespace NoteApp.Controllers
             }
             // If the model state is not valid, repopulate the categories and return the view
             ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name");
-            // ViewBag.UserOwnedTags = new SelectList(_context.NoteTags
-            //     .Where(tag => tag.Tag.WasCreatedBy == _userManager.GetUserId(User)), "Id", "Name");
+
+            var userId = _userManager.GetUserId(User);
+            var ownedTags = _context.Tags
+                .Where(tag => tag.WasCreatedBy == userId)
+                .ToList();
+            
+            ViewBag.UserOwnedTags = new SelectList(ownedTags, "Id", "Name");
 
             return View(note);
         }

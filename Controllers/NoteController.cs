@@ -83,7 +83,7 @@ namespace NoteApp.Controllers
         // POST: Note/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Id,Title,Body,CategoryId,NoteTags")] Note note, List<Guid> selectedTags)
+        public IActionResult Create([Bind("Id,Title,Body,CategoryId,NoteTags,IsPublic")] Note note, List<Guid> selectedTags)
         {
             note.IsOwnedBy = _userManager.GetUserId(User);
             note.CreatedAt = DateTime.UtcNow;

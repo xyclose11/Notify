@@ -10,28 +10,39 @@
 @using (Html.BeginForm())
 {
     <div class="mb-4">
-        @*Header*@
+        @*Title*@
         <div class="form-floating m-4">
             @Html.TextBoxFor(model => model.Title, new { @class="form-control"})
             @Html.LabelFor(model => model.Title)
         </div>
         
-        @*Body*@
+        @*Description*@
         <div class="form-floating m-4">
-            @Html.TextAreaFor(model => model.Body, new { @class="form-control" ,rows=3})
+            @Html.TextAreaFor(model => model.Body, new { @style = "height:350px", @class = "form-control", @rows = 50})
             @Html.LabelFor(model => model.Body)
         </div>
+        
+        @*Category*@
         <div class="form-group">
             <label asp-for="CategoryId" class="control-label"></label>
             <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories"></select>
             <a asp-action="Create" asp-controller="Category">Category +</a>
         </div>
+
+        @*Tags*@
         <div class="form-group">
             <label asp-for="NoteTags" class="control-label"></label>
             <select asp-for="NoteTags" name="selectedTags" class="form-control" asp-items="ViewBag.Tags" multiple></select>
             <a asp-action="Create" asp-controller="Tag">Add Tag</a>
         </div>
 
+        @*IsPublic*@
+
+        <div class="form-group">
+            @Html.CheckBoxFor(model => model.IsPublic) 
+            @Html.LabelFor(model => model.IsPublic)
+        </div>
+        
         <div class="form-floating m-4">
             <button type="submit" class="btn btn-success" value="Save">Create</button>
             

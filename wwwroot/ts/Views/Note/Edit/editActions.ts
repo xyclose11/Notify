@@ -27,6 +27,10 @@ $(document).ready(function () {
                 })
             })
         });
+        
+        $(document).on('click', '#tagActionClearBtn', () => {
+            $('input[type="checkbox"][id^="tagACheckbox+"]').prop("checked", false)
+        })
 })
 
 

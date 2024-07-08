@@ -71,14 +71,46 @@ function updateNoteActions(noteId: string, categoryId?: string, tagIds?: string[
             tagIds: tagIds,
         },
         success: function(data) {
-            console.log(`SUCCESS`)
+            // Display success alert box thing
+            if (alertTrigger) {
+                appendAlert(`Changes have been applied!`, "success")
+            }
+
         },
         error: function(errorThrown) {
-            console.log(`ERROR -> ${errorThrown}`)
+            if (alertTrigger) {
+                alertTrigger.addEventListener('click', () => {
+                    appendAlert('Error, changes have not been saved', "danger")
+                })
+            }
+
         }
         
     })
 }
+
+// Alert logic
+
+const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+const appendAlert = (message: string, type: string) => {
+    const wrapper = document.createElement('div')
+    wrapper.innerHTML = [
+        `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+        `   <div>${message}</div>`,
+        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+        '</div>'
+    ].join('')
+    
+    if (alertPlaceholder && alertPlaceholder.innerHTML.length < 600) {
+        alertPlaceholder.append(wrapper)
+        setTimeout(function() {
+            alertPlaceholder.innerHTML = ''
+        }, 5000)
+    }
+    
+}
+
+const alertTrigger = document.getElementById('editActionSubmit')
 
 
 

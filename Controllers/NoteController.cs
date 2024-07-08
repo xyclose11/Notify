@@ -230,9 +230,7 @@ namespace NoteApp.Controllers
                 foreach (var noteTag in noteTags)
                 {
                     if (tagIds.Contains(noteTag.TagId)) continue; // If tagIds does NOT contain the tag in the db remove it from the db
-                    Console.WriteLine("REMOVE");
                     await RemoveTagFromNote(noteTag.TagId, noteId);
-
                 }
 
                 await AddTagToNote(tagIds, noteId);

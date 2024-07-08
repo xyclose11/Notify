@@ -129,10 +129,35 @@ public class TagController: Controller
         return RedirectToAction("Index", "Note");
     }
 
-    public async Task<IActionResult> LoadMoreTags(int currentTagCount)
+    public async Task<IActionResult> LoadMoreTags(int currentTagCount, Guid? noteId)
     {
         var moreTags = _context.Tags.Skip(currentTagCount).Take(5);
+        // var moreTagsJson = new List<LoadMoreTagsObject> {};
+        
+        // foreach (var tag in moreTags)
+        // {
+        //     if (noteId != null)
+        //     {
+        //         var appliedTags = _context.NoteTags
+        //             .Skip(currentTagCount)
+        //             .Take(5)
+        //             .Where(nt => nt.NoteId == noteId)
+        //             .Select(appliedTag => appliedTag.Tag)
+        //             .ToList();
+        //         Console.WriteLine($"APPLIED{appliedTags.Count}");
+        //     }
+        //     var isSelected = false;
+        //
+        //     Console.WriteLine($"ISSELECTED: {isSelected}");
+        //     moreTagsJson.Add(new LoadMoreTagsObject() {Tag = tag, isSelected = isSelected});
+        // }
         return Json(moreTags);
     }
-    
+
+    class LoadMoreTagsObject
+    {
+        public Tag Tag { get; set; }
+        public bool isSelected { get; set; }
+            
+    }
 }

@@ -85,13 +85,10 @@ const alertTrigger = document.getElementById('editActionSubmit')
 
 
 function addTagToActionCB(tag: {name: string, id: string}) {
-    // Get previously selected tags
-    let storedTagIds = JSON.parse(localStorage.getItem('selectedTagIds') || '[]');
 
     const containerElem = $('#tagActionCBList');
     const divT = $('<div/>', { class: "form-check form-check-inline"}).appendTo(containerElem);
-    const inputT = $('<input />', { class: "form-check-input", type: 'checkbox', name: "tagACheckbox" , id: `tagACheckbox+${tag.id}`, value: tag.id,
-        checked: storedTagIds.includes(tag.id)});
+    const inputT = $('<input />', { class: "form-check-input", type: 'checkbox', name: "tagACheckbox" , id: `tagACheckbox+${tag.id}`, value: tag.id,});
     const labelT = $('<label />', { class: "form-check-label", 'for': `#tagActionCB+${tag.id}`, text: tag.name });
 
     divT.append(inputT, labelT);

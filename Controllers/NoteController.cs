@@ -218,10 +218,6 @@ namespace NoteApp.Controllers
             }
             if (tagIds.Count > 0)
             {
-                // Remove old tags
-                // Apply new tags
-
-     
                 var noteTags = _context.NoteTags
                     .Where(nt => nt.NoteId == noteId)
                     .ToList(); // Contains all tags applied to the current Note
@@ -237,6 +233,13 @@ namespace NoteApp.Controllers
 
 
             }
+
+            if (tagIds.Count == 0)
+            {
+                // Remove all tags
+                Console.WriteLine("HIT");
+                await RemoveAllTagsFromNote(noteId);
+            }
             
 
             // TODO Change isPublic to regular setter
@@ -248,6 +251,22 @@ namespace NoteApp.Controllers
             await _context.SaveChangesAsync();
             
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task<IActionResult> RemoveAllTagsFromNote(Guid noteId)
+        {
+            var noteTags = await _context.NoteTags
+                .Where(nt => nt.NoteId == noteId)
+                .ToListAsync();
+            
+            if (noteTags.Count == 0)
+            {
+                return NotFound();
+            }
+            _context.NoteTags.RemoveRange(noteTags);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
         }
 
         // POST: Note/Delete/5
@@ -541,8 +560,6 @@ namespace NoteApp.Controllers
                 }
                 else
                 {
-                    // RemoveTagFromNote(Id, noteId);
-                    Console.WriteLine("HIT!");
                     TempData["ErrorMessage"] = $"{tag.Name} Already Exists.";           
                     ModelState.AddModelError("Name", "Tag already exists.");
                 }

@@ -28,6 +28,7 @@ $(document).ready(function () {
             })
         });
         
+        // Clear tag selection
         $(document).on('click', '#tagActionClearBtn', () => {
             $('input[type="checkbox"][id^="tagACheckbox+"]').prop("checked", false)
         })

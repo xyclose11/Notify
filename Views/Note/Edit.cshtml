@@ -65,10 +65,13 @@
             <div class="col-7 text-end me-3">
                 <div class="btn-group btn-group-sm">
                     <div class="form-floating rounded-end-0">
-                        <button type="submit" class="btn btn-danger rounded-start-3 rounded-end-0" value="delete">Delete Note</button>
+                        <form action="/Note/Delete" method="get">
+                            <input type="hidden" value="@Model.Note.Id" name="id"/>
+                            <button type="submit" class="btn btn-danger rounded-start-3 rounded-end-0" value="delete">Delete Note</button>
+                        </form>
                     </div>
                     <div class="form-floating rounded-0">
-                        <button type="submit" asp-action="Index" asp-controller="Note" class="btn btn-secondary rounded-0" value="cancel">Cancel</button>
+                        <button type="submit" class="btn btn-secondary rounded-0" value="cancel">Cancel</button>
                     </div>
                     <div class="form-floating rounded-start-0">
                         <button type="submit" form="editNoteForm" class="btn btn-success rounded-start-0 rounded-end-3" value="save">Save Changes</button>

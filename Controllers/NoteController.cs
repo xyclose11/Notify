@@ -130,7 +130,6 @@ namespace NoteApp.Controllers
             var userId = _userManager.GetUserId(User);
             // Get categories
             var categories = _context.Categories
-                .Where(cat => cat.WhoCreated == userId)
                 .ToList();
 
             // Get tags

@@ -71,7 +71,10 @@
                         </form>
                     </div>
                     <div class="form-floating rounded-0">
-                        <button type="submit" class="btn btn-secondary rounded-0" value="cancel">Cancel</button>
+                        @using (Html.BeginForm("Index", "Note"))
+                        {
+                            <input class="btn btn-secondary rounded-0" type="submit" value="Cancel" />
+                        }
                     </div>
                     <div class="form-floating rounded-start-0">
                         <button type="submit" form="editNoteForm" class="btn btn-success rounded-start-0 rounded-end-3" value="save">Save Changes</button>

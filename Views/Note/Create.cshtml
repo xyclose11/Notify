@@ -10,49 +10,76 @@
 @using (Html.BeginForm())
 {
     <div class="mb-4">
-        @*Title*@
-        <div class="form-floating m-4">
-            @Html.TextBoxFor(model => model.Title, new { @class="form-control"})
-            @Html.LabelFor(model => model.Title)
-            @Html.ValidationMessageFor(model => model.Title)
-        </div>
-        
-        @*Description*@
-        <div class="form-floating m-4">
-            @Html.TextAreaFor(model => model.Body, new { @style = "height:350px", @class = "form-control", @rows = 50})
-            @Html.LabelFor(model => model.Body)
-            @Html.ValidationMessageFor(model => model.Body)
-        </div>
-        
-        @*Category*@
-        <div class="form-group">
-            <label asp-for="CategoryId" class="control-label"></label>
-            <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories"></select>
-            <a asp-action="Create" asp-controller="Category">Category +</a>
-            @Html.ValidationMessageFor(model => model.CategoryId)
-        </div>
+        <div class="row mb-2">
+            <div class="col-6">
+                @*Title*@
+                <div class="form-floating ">
+                    @Html.TextBoxFor(model => model.Title, new { @class = "form-control" })
+                    @Html.LabelFor(model => model.Title)
+                    @Html.ValidationMessageFor(model => model.Title)
+                </div>
+                
+            </div>
 
-        @*Tags*@
-        <div class="form-group">
-            <label asp-for="NoteTags" class="control-label"></label>
-            <select asp-for="NoteTags" name="selectedTags" class="form-control" asp-items="ViewBag.UserOwnedTags" multiple></select>
-            <a asp-action="Create" asp-controller="Tag">Add Tag</a>
-            @Html.ValidationMessageFor(model => model.NoteTags)
+            <div class="col-4">
+                @*Category*@
+                <div class="input-group form-floating">
+                    <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.Categories"></select>
+                    <label asp-for="CategoryId" >Category</label>
+                    <button class="btn btn-outline-secondary rounded-end">
+                        <a asp-action="Create" asp-controller="Category"><i class="bi bi-plus text-decoration-none"></i></a>
+                    </button>
 
-        </div>
-
-        @*IsPublic*@
-
-        <div class="form-group">
-            @Html.CheckBoxFor(model => model.IsPublic) 
-            @Html.LabelFor(model => model.IsPublic)
-            @Html.ValidationMessageFor(model => model.IsPublic)
-        </div>
-        
-        <div class="form-floating m-4">
-            <button type="submit" class="btn btn-success" value="Save">Create</button>
+                    @Html.ValidationMessageFor(model => model.CategoryId)
+                </div>
+                
+            </div>
             
+            <div class="col-2">
+                @*IsPublic*@
+                <div class="form-group">
+                    @Html.CheckBoxFor(model => model.IsPublic)
+                    @Html.LabelFor(model => model.IsPublic)
+                    @Html.ValidationMessageFor(model => model.IsPublic)
+                </div>
+            </div>
         </div>
+        
+        <div class="row">
+
+            <div class="col-9">
+                @*Description*@
+                <div class="form-floating ">
+                    @Html.TextAreaFor(model => model.Body, new { @style = "height:350px", @class = "form-control", @rows = 50 })
+                    @Html.LabelFor(model => model.Body)
+                    @Html.ValidationMessageFor(model => model.Body)
+                </div>
+            </div>
+
+
+            <div class="col-3">
+                @*Tags*@
+                <div class="input-group">
+                    <label asp-for="NoteTags" class="form-label">Tags</label>
+                    <button class="btn btn-outline-secondary rounded-end">
+                        <a asp-action="Create" asp-controller="Tag">Add Tag</a>
+                    </button>
+                </div>
+                <select asp-for="NoteTags" name="selectedTags" class="form-control" asp-items="ViewBag.UserOwnedTags" multiple></select>
+                @Html.ValidationMessageFor(model => model.NoteTags)
+
+            </div>
+
+
+            <div class="col">
+                <div class="form-floating ">
+                    <button type="submit" class="btn btn-success" value="Save">Create</button>
+                </div>
+            </div>
+        </div>
+        
+
+
     </div>
 
 

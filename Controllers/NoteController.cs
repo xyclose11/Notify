@@ -75,7 +75,11 @@ namespace NoteApp.Controllers
         public IActionResult Create()
         {
             // Pass all the categories to the view in a dropdown list
-            ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name");
+            var categories = _context.Categories.ToList();
+            categories.Add(new Category()); // Add blank category
+            var sortedCategories = categories.OrderBy(n => n.Name).ToList();
+            ViewBag.Categories = new SelectList(sortedCategories, "CategoryId", "Name");
+            
             var userId = _userManager.GetUserId(User);
             var ownedTags = _context.Tags
                 .Where(tag => tag.WasCreatedBy == userId)

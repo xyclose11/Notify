@@ -27,9 +27,15 @@
                 </div>
             </th>
 
-            <th scope="col">Title</th>
+            <th scope="col">
+                @Html.ActionLink("Title", "Index", "Note", new { sortOrder = ViewBag.TitleSortParm})
+                </th>
             <th scope="col">Body</th>
             <th scope="col">Tags</th>
+            <th scope="col">
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]">Created</a>
+            </th>
+            <th scope="col">Updated</th>
             <th scope="col">Actions</th>
         </tr>
         </thead>

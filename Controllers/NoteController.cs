@@ -35,19 +35,58 @@ namespace NoteApp.Controllers
         }
 
         // GET: Note
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
         {
+            
+            ViewBag.TitleSortParm = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewData["CreateDateSortParm"] = sortOrder == "CreateDate" ? "create_date_desc" : "CreateDate";
+            ViewData["UpdatedDateSortParm"] = sortOrder == "UpdateDate" ? "update_date_desc" : "UpdateDate";
+            ViewData["TagSortParm"] = sortOrder == "Tag" ? "tag_desc" : "Tag";
+            // ViewData["GroupSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            
             var userId = _userManager.GetUserId(User);
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
             
-            var notes = await _context.Notes
-                .Where(note => note.IsOwnedBy == userId)
-                .ToListAsync();
+            var notes = from n in _context.Notes.Where(note => note.IsOwnedBy == userId)
+                select n;
+            switch (sortOrder)
+            {
+                case "title_desc":
+                    notes = notes.OrderByDescending(n => n.Title);
+                    break;
+                case "CreateDate":
+                    notes = notes.OrderBy(n => n.CreatedAt);
+                    break;
+                case "create_date_desc":
+                    notes = notes.OrderByDescending(n => n.CreatedAt);
+                    break;
+                case "UpdateDate":
+                    notes = notes.OrderBy(n => n.CreatedAt);
+                    break;
+                case "update_date_desc":
+                    notes = notes.OrderByDescending(n => n.CreatedAt);
+                    break;
+                case "Tag":
+                    notes = notes.OrderBy(n => n.NoteTags.OrderBy(nt => nt.Tag.Name));
+                    break;
+                case "tag_desc":
+                    notes = notes.OrderByDescending(n => n.NoteTags.OrderByDescending(nt => nt.Tag.Name));
+                    break;
+                default:
+                    notes = notes.OrderBy(s => s.Title);
+                    break;
+            }
+            
+
+            
+            // var notes = await _context.Notes
+            //     .Where(note => note.IsOwnedBy == userId)
+            //     .ToListAsync();
                 
             var model = new NoteIndexViewModel
             {
-                Notes = notes,
+                Notes = await notes.ToListAsync(),
                 Roles = roles
             };
             

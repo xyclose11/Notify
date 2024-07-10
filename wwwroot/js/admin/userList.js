@@ -1,4 +1,4 @@
-import $ from 'jquery';
+"use strict";
 $('.delete-user-form').off('submit').on('submit', function (event) {
     const $form = $(this).closest('form');
     console.log($form);

@@ -1,0 +1,17 @@
+@model IEnumerable<NoteApp.Models.Category>
+
+<!-- Displays the categories -->
+<div class="row m-1 rounded-3">
+    <div class="dropdown-align-right p-0 d-block mx-auto">
+        <div class="form-floating m-1 p-0">
+            <select  class="form-select" aria-label="Category Selector">
+                <option value="Robots"></option>
+                @foreach (var category in Model)
+                {
+                    <option name="categorySelect" id="@category.CategoryId" value="@category.Name">@category.Name</option>
+                }
+            </select>
+            @* @Html.DropDownListFor(m => m., ViewBag.Categories, new { @class = "form-control"}) *@
+        </div>
+    </div>
+</div>

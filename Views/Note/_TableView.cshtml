@@ -268,162 +268,177 @@
 
 
     </div>
-    @await Html.PartialAsync("FilteringPartial/_FilterView", Model.Tags)
+    <div class="col-2 border border-secondary-subtle rounded-3 border-1" id="filterTagContainer">
+        <div class="row border border-1 m-1 rounded-3 border-secondary-subtle">
+            <h3>Filters</h3>
+        </div>
+        
+        @using (Html.BeginForm("Index", "Note", FormMethod.Post))
+        {
 
-    <div class="modal fade" tabindex="-1" id="deleteManyNotesModal" aria-label="Delete Many Notes Modal" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Are you sure you want to delete these notes?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+            @await Html.PartialAsync("FilteringPartial/_CategoryView", Model.Categories)
+            @await Html.PartialAsync("FilteringPartial/_FilterView", Model.Tags)
+            <button type="submit" class="btn btn-secondary">Apply</button>
+        }
+        
+    </div>
+    
+        @* @await Html.PartialAsync("FilteringPartial/_FilterView", Model.Tags) *@
 
-                <div class="modal-body">
-                    <div id="deleteManyNotesModalBody">
-                        
+        <div class="modal fade" tabindex="-1" id="deleteManyNotesModal" aria-label="Delete Many Notes Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Are you sure you want to delete these notes?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" id="submitDeleteManyNotesBtn" class="btn btn-danger" data-bs-dismiss="modal">Delete</button>
+                    <div class="modal-body">
+                        <div id="deleteManyNotesModalBody">
+
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" id="submitDeleteManyNotesBtn" class="btn btn-danger" data-bs-dismiss="modal">Delete</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
     </div>
 
-<script>
-// Parameters are sent to function in noteViewChange.ts
-// Table pagination
-$(document).ready(function() {
-    let currentPage = @ViewBag.CurrentPage;
-    let totalPage = @ViewBag.TotalPages;
-    let selectedCategory = localStorage.getItem("selectedCategory");
+@* <script> *@
+@* // Parameters are sent to function in noteViewChange.ts *@
+@* // Table pagination *@
+@* $(document).ready(function() { *@
+@*     let currentPage = @ViewBag.CurrentPage; *@
+@*     let totalPage = @ViewBag.TotalPages; *@
+@*     let selectedCategory = localStorage.getItem("selectedCategory"); *@
+@* *@
+@*     // Generate GoToStart link *@
+@*     let goToStart = $('<a>').addClass('pagination-link page-link').text('<<<'); *@
+@*     goToStart.attr('href', `/Note/GetNotes?view=Table&currentPage=${1}&category=${selectedCategory}`); *@
+@* *@
+@*     let goToStartItem = $('<li>').addClass('page-item').append(goToStart); *@
+@*     if (currentPage === 1) { *@
+@*         goToStartItem.addClass('disabled'); *@
+@*     } *@
+@* *@
+@*     // Generate Prev link *@
+@*     let previousLink = $('<a>').addClass('pagination-link page-link').text('Previous'); *@
+@*     if (currentPage > 1) { *@
+@*         previousLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage - 1}&category=${selectedCategory}`); *@
+@*     } else { *@
+@*         previousLink.addClass('disabled'); *@
+@*     } *@
+@*     let previousListItem = $('<li>').addClass('page-item').append(previousLink); *@
+@* *@
+@*     // Generate left 2 links *@
+@*     let leftLinks = []; *@
+@*     for (let i = currentPage - 1; i >= currentPage - 2; i--) { *@
+@*         if (i >= 1) { *@
+@*             let pageLink = $('<a>').addClass('pagination-link page-link'); *@
+@*             pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${i}&category=${selectedCategory}`); *@
+@*             pageLink.text(i); *@
+@* *@
+@*             let listItem = $('<li>').addClass('page-item'); *@
+@*             listItem.append(pageLink); *@
+@*             leftLinks.unshift(listItem); *@
+@*         } *@
+@*     } *@
+@* *@
+@*     // Generate current page link *@
+@*     let currentLink; *@
+@*     if (currentPage >= 1 || currentPage <= totalPage) { *@
+@*         let pageLink = $('<a>').addClass('pagination-link page-link'); *@
+@*         pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage}&category=${selectedCategory}`).text(currentPage); *@
+@* *@
+@*         let listItem = $('<li>').addClass('page-item active disabled'); *@
+@*         listItem.append(pageLink); *@
+@* *@
+@*         currentLink = listItem; *@
+@*     } *@
+@* *@
+@*     // Generate right 2 links *@
+@*     let rightLinks = []; *@
+@*     for (let i = currentPage + 1; i <= currentPage + 2; i++) { *@
+@*         if (i <= totalPage) { *@
+@*             let pageLink = $('<a>').addClass('pagination-link page-link'); *@
+@*             pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${i}&category=${selectedCategory}`); *@
+@*             pageLink.text(i); *@
+@* *@
+@*             let listItem = $('<li>').addClass('page-item'); *@
+@*             listItem.append(pageLink); *@
+@*             rightLinks.push(listItem); *@
+@*         } *@
+@*     } *@
+@* *@
+@*     // Generate Next link *@
+@*     let nextLink = $('<a>').addClass('pagination-link page-link').text('Next'); *@
+@*     if (currentPage < totalPage) { *@
+@*         nextLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage + 1}&category=${selectedCategory}`); *@
+@*     } else { *@
+@*         nextLink.addClass('disabled'); *@
+@*     } *@
+@*     let nextListItem = $('<li>').addClass('page-item').append(nextLink); *@
+@* *@
+@*     // Generate GoToEnd link *@
+@*     let goToEnd = $('<a>').addClass('pagination-link page-link').text('>>>'); *@
+@*     goToEnd.attr('href', `/Note/GetNotes?view=Table&currentPage=${totalPage}&category=${selectedCategory}`); *@
+@* *@
+@*     let goToEndItem = $('<li>').addClass('page-item').append(goToEnd); *@
+@*     if (currentPage === totalPage) { *@
+@*         goToEndItem.addClass('disabled'); *@
+@*     } *@
+@* *@
+@*     // Append all the links to #noteViewPagination in the correct order *@
+@*     $('#noteViewPagination').append(goToStartItem, previousListItem, leftLinks, currentLink, rightLinks, nextListItem, goToEndItem); *@
+@* }); *@
+@* *@
+@* *@
+@* </script> *@
 
-    // Generate GoToStart link
-    let goToStart = $('<a>').addClass('pagination-link page-link').text('<<<');
-    goToStart.attr('href', `/Note/GetNotes?view=Table&currentPage=${1}&category=${selectedCategory}`);
-
-    let goToStartItem = $('<li>').addClass('page-item').append(goToStart);
-    if (currentPage === 1) {
-        goToStartItem.addClass('disabled');
-    }
-
-    // Generate Prev link
-    let previousLink = $('<a>').addClass('pagination-link page-link').text('Previous');
-    if (currentPage > 1) {
-        previousLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage - 1}&category=${selectedCategory}`);
-    } else {
-        previousLink.addClass('disabled');
-    }
-    let previousListItem = $('<li>').addClass('page-item').append(previousLink);
-
-    // Generate left 2 links
-    let leftLinks = [];
-    for (let i = currentPage - 1; i >= currentPage - 2; i--) {
-        if (i >= 1) {
-            let pageLink = $('<a>').addClass('pagination-link page-link');
-            pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${i}&category=${selectedCategory}`);
-            pageLink.text(i);
-
-            let listItem = $('<li>').addClass('page-item');
-            listItem.append(pageLink);
-            leftLinks.unshift(listItem);
-        }
-    }
-
-    // Generate current page link
-    let currentLink;
-    if (currentPage >= 1 || currentPage <= totalPage) {
-        let pageLink = $('<a>').addClass('pagination-link page-link');
-        pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage}&category=${selectedCategory}`).text(currentPage);
-
-        let listItem = $('<li>').addClass('page-item active disabled');
-        listItem.append(pageLink);
-
-        currentLink = listItem;
-    }
-
-    // Generate right 2 links
-    let rightLinks = [];
-    for (let i = currentPage + 1; i <= currentPage + 2; i++) {
-        if (i <= totalPage) {
-            let pageLink = $('<a>').addClass('pagination-link page-link');
-            pageLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${i}&category=${selectedCategory}`);
-            pageLink.text(i);
-
-            let listItem = $('<li>').addClass('page-item');
-            listItem.append(pageLink);
-            rightLinks.push(listItem);
-        }
-    }
-
-    // Generate Next link
-    let nextLink = $('<a>').addClass('pagination-link page-link').text('Next');
-    if (currentPage < totalPage) {
-        nextLink.attr('href', `/Note/GetNotes?view=Table&currentPage=${currentPage + 1}&category=${selectedCategory}`);
-    } else {
-        nextLink.addClass('disabled');
-    }
-    let nextListItem = $('<li>').addClass('page-item').append(nextLink);
-
-    // Generate GoToEnd link
-    let goToEnd = $('<a>').addClass('pagination-link page-link').text('>>>');
-    goToEnd.attr('href', `/Note/GetNotes?view=Table&currentPage=${totalPage}&category=${selectedCategory}`);
-
-    let goToEndItem = $('<li>').addClass('page-item').append(goToEnd);
-    if (currentPage === totalPage) {
-        goToEndItem.addClass('disabled');
-    }
-
-    // Append all the links to #noteViewPagination in the correct order
-    $('#noteViewPagination').append(goToStartItem, previousListItem, leftLinks, currentLink, rightLinks, nextListItem, goToEndItem);
-});
-
-
-</script>
-
-<script>
-    $(document).ready(function () {
-        getCategories();
-    })
-
-    function getCategories() {
-        $.get('/Category/GetCategories', function (data) {
-            // Assuming the id of your dropdown list is 'categoryDropdown'
-            let dropdown = document.getElementById('categoryDropdown');
-
-            // Clear any existing options
-            dropdown.innerHTML = '';
-            let option = document.createElement('option');
-            option.value = "";
-            option.text = "";
-            dropdown.add(option);
-            // Add an option for each category
-            data.forEach(function(category) {
-                let option = document.createElement('option');
-                option.value = category.name;
-                option.text = (category.name);
-                dropdown.add(option);
-            });
-            
-            // Set the selected category to the value in localStorage, if it exists
-            var selectedCategory = localStorage.getItem('selectedCategory');
-            if (selectedCategory) {
-                dropdown.value = selectedCategory;
-            }
-
-        })
-    }
-    
-    document.getElementById('categoryDropdown').addEventListener('change', function() {
-        // When the selected category changes, store the new value in localStorage
-        localStorage.setItem('selectedCategory', this.value);
-        location.reload();
-    });
-</script>
+@* <script> *@
+@*     $(document).ready(function () { *@
+@*         getCategories(); *@
+@*     }) *@
+@* *@
+@*     function getCategories() { *@
+@*         $.get('/Category/GetCategories', function (data) { *@
+@*             // Assuming the id of your dropdown list is 'categoryDropdown' *@
+@*             let dropdown = document.getElementById('categoryDropdown'); *@
+@* *@
+@*             // Clear any existing options *@
+@*             dropdown.innerHTML = ''; *@
+@*             let option = document.createElement('option'); *@
+@*             option.value = ""; *@
+@*             option.text = ""; *@
+@*             dropdown.add(option); *@
+@*             // Add an option for each category *@
+@*             data.forEach(function(category) { *@
+@*                 let option = document.createElement('option'); *@
+@*                 option.value = category.name; *@
+@*                 option.text = (category.name); *@
+@*                 dropdown.add(option); *@
+@*             }); *@
+@*              *@
+@*             // Set the selected category to the value in localStorage, if it exists *@
+@*             var selectedCategory = localStorage.getItem('selectedCategory'); *@
+@*             if (selectedCategory) { *@
+@*                 dropdown.value = selectedCategory; *@
+@*             } *@
+@* *@
+@*         }) *@
+@*     } *@
+@*      *@
+@*     document.getElementById('categoryDropdown').addEventListener('change', function() { *@
+@*         // When the selected category changes, store the new value in localStorage *@
+@*         localStorage.setItem('selectedCategory', this.value); *@
+@*         location.reload(); *@
+@*     }); *@
+@* </script> *@
 
 <script>
     $(document).ready(function() {

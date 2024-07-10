@@ -121,4 +121,8 @@
       <TypeScriptCompile Include="wwwroot\ts\Views\Note\noteViewChange.ts" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Views\Shared\EditorTemplates\" />
+    </ItemGroup>
+
 </Project>

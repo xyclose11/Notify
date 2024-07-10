@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NoteApp.Helpers;
 using NoteApp.Models.ViewModels.Notes;
-using NoteApp.Views.Shared;
 using X.PagedList;
 
 namespace NoteApp.Controllers
@@ -44,12 +43,35 @@ namespace NoteApp.Controllers
             
             var noteTagViewModels = new NoteTagViewModel
             {
-                NoteViewModels = GetNoteViewModels("", "", []).ToPagedList(pageNumber, 5),
-                Tags = GetUserOwnedTags(userId)
+                NoteViewModels = GetNoteViewModels("", sortOrder, []).ToPagedList(pageNumber, 5),
+                Tags = GetUserOwnedTags(userId),
+                Categories = GetCategories()
             };
             var roles = await _userManager.GetRolesAsync(user);
-            
             return View("Index", noteTagViewModels);
+        }
+        
+        [HttpPost]
+        public  ActionResult Index(int? page, string sortOrder)
+        {
+            var pageNumber = page ?? 1;
+            var userId = _userManager.GetUserId(User);
+            //var user = await _userManager.FindByIdAsync(userId);
+            
+            var noteTagViewModels = new NoteTagViewModel
+            {
+                NoteViewModels = GetNoteViewModels("", sortOrder, []).ToPagedList(pageNumber, 5),
+                Tags = GetUserOwnedTags(userId),
+                Categories = GetCategories()
+            };
+            // var roles = await _userManager.GetRolesAsync(user);
+            return View("Index", noteTagViewModels);
+        }
+        
+        public IEnumerable<Category> GetCategories()
+        {
+            var categories =  _context.Categories.ToList();
+            return categories;
         }
 
         // GET: Note/Details/5

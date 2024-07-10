@@ -213,10 +213,16 @@
 
             </td>
             <td class="col-1">
-                DC
+                <div class="text-sm-center">
+                    @Html.DisplayTextFor(m => noteViewModel.Note.CreatedAt)
+                </div>
             </td>
-            <td class="col-1">
-                DU
+            <td class="col-1 text-sm-center">
+                @{
+                    <div>
+                        @(noteViewModel.Note.UpdatedAt.Subtract(DateTime.UtcNow).Days * -1) days ago
+                    </div>
+                }
             </td>
             <td class="col-2">
                 <ul class="list-group list-group-horizontal-sm">

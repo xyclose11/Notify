@@ -1,3 +1,6 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using X.PagedList
+@using X.PagedList.Mvc.Core
 @model NoteApp.Models.ViewModels.Notes.NoteTagViewModel
 
 <div class="row justify-content-around gx-2 p-0 mb-2 mt-2" id="noteViewTableContainer">
@@ -28,8 +31,8 @@
             </th>
 
             <th scope="col">
-                @Html.ActionLink("Title", "Index", "Note", new { sortOrder = ViewBag.TitleSortParm})
-                </th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParm"]">Title</a>
+            </th>
             <th scope="col">Body</th>
             <th scope="col">Tags</th>
             <th scope="col">
@@ -44,7 +47,7 @@
         {
             <tr>
                 <td>
-                    <input class="form-check-input" value="@noteViewModel.Note.Id" name="noteCB" id="noteCB+@noteViewModel.Note.Id" type="checkbox"/>
+                    <input class="form-check-input" value="@noteViewModel" name="noteCB" id="noteCB+@noteViewModel.Note.Id" type="checkbox"/>
                 </td>
                 <td>@Html.DisplayFor(modelItem => noteViewModel.Note.Title)</td>
                 <td>@noteViewModel.Note.Body</td>
@@ -54,10 +57,10 @@
                             @foreach (var tag in noteViewModel.Note.NoteTags)
                             {
                                 <div class="col-sm-auto p-0">
-                                
+                
                                     <div class="btn-group btn-group-sm m-1" role="group" aria-label="Tag Controls">
                                         <button data-bs-target="#editTagModal-@noteViewModel.Note.Id" type="button" class="btn pt-0 pb-0" data-bs-toggle="modal" type="button" style="background-color: @tag.Tag.Color;" asp-action="Edit" asp-controller="Tag" data-tag-id="@tag.TagId">@tag.Tag.Name</button>
-                                                                       
+                
                                         <form action="/Note/RemoveTagFromNote" method="post">
                                             <div>
                                                 <!-- Delete Tag Button -->
@@ -66,11 +69,11 @@
                                                 </button>
                                                 <input name="noteId" type="hidden" id="hiddenNoteId" value="@noteViewModel.Note.Id"/>
                                                 <input name="selectedTagId" type="hidden" id="hiddenSelectedTag" value="@tag.TagId"/>
-
+                
                                             </div>
-
+                
                                         </form>
-
+                
                                     </div>
                                 </div>
                                 <div class="modal fade" id="editTagModal-@noteViewModel.Note.Id" tabindex="-1" aria-labelledby="editTagModalLabel" aria-hidden="true" >
@@ -80,35 +83,35 @@
                                                 <h5 class="modal-title" id="createTagModalLabel">Edit Tag</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
-
+                
                                             <div class="modal-body">
                                                 <form action="Tag/Edit/" method="post">
                                                     <div class="input-group mb-2">
                                                         <span class="input-group-text" for="newTagName">Name</span>
                                                         <input class="form-control" type="text" placeholder="@tag.Tag.Name" id="newTagName" name="name" required/>
                                                     </div>
-
+                
                                                     <div class="input-group mb-2">
                                                         <span class="input-group-text">Description</span>
                                                         <input class="form-control" type="text" placeholder="@tag.Tag.Description" id="newTagDescription" name="description"/>
-
+                
                                                     </div>
-                                                    
+                
                                                     <div class="input-group mb-2">
                                                         <label for="tagColorInput" class="form-label me-2">Color</label>
                                                         <input type="color" class="form-control form-control-color" id="tagColorInput" name="color" value="@tag.Tag.Color" title="Alter Tag Color">
                                                     </div>
-
+                
                                                     <input class="form-floating" type="hidden" placeholder="TagId" id="tagId" name="tagId" value="@tag.TagId"/>
-                                                    
+                
                                                     <div class="text-end">
                                                         <button type="submit" aria-label="Edit Tag Button" class="btn btn-success">Save Changes</button>
-                                                        
+                
                                                     </div>
                                                 </form>
-
+                
                                             </div>
-
+                
                                             <div class="modal-footer">
                                                 @tag.Tag.NoteCount
                                                 <form action="Tag/Delete/" method="post">
@@ -118,17 +121,17 @@
                                                     </div>
                                                 </form>
                                             </div>
-
+                
                                         </div>
                                     </div>
                                 </div>
-
+                
                             }
-
+                
                         </div>
-
+                
                     </div>
-
+                
                     <!-- Add Tag to Note -->
                     @if (noteViewModel.NonAppliedTags.Count != 0)
                     {
@@ -157,17 +160,17 @@
                                 </div>
                                 <div class="modal-body">
                                     <form action="/Note/AddTagToNote" method="post">
-     
+                
                                         <select name="selectedTags" multiple class="form-control" size="8">
-                                            
+                
                                             @foreach (var tag in noteViewModel.NonAppliedTags)
                                             {
                                                 <option class="text-sm-center" value="@tag.Id">@tag.Name</option>
                                             }
                                         </select>
-                                        
+                
                                         <input name="noteId" type="hidden" id="hiddenNoteId" value="@noteViewModel.Note.Id"/>
-                                        
+                
                                         <div class="form-floating mt-2 text-end">
                                             <button class="btn btn-primary" type="submit">Save</button>
                                         </div>
@@ -188,12 +191,12 @@
                                                 <label for="tagDescription" class="form-label">Description (Optional)</label>
                                             </div>
                                             <div class="text-danger">@Html.ValidationSummary(true)</div>
-                                            
+                
                                             <div class="input-group mb-2">
                                                 <label for="tagColorCreate" class="form-label me-2">Color</label>
                                                 <input type="color" class="form-control form-control-color" id="tagColorCreate" name="Color" value="#4dccc5" title="Create Tag Color">
                                             </div>
-                                            
+                
                                             <div class="form-floating mt-2 text-end">
                                                 <button type="submit" class="btn btn-primary">Save</button>
                                             </div>
@@ -203,8 +206,8 @@
                             </div>
                         </div>
                     </div>
-
-                    
+                
+                
                 </td>
                 <td>
                     <ul class="list-group list-group-horizontal-sm">
@@ -237,10 +240,33 @@
 
 
     <!-- Pagination -->
-    <nav aria-label="Pagination">
-        <ul class="pagination justify-content-center m-2" id="noteViewPagination">
-        </ul>
-    </nav>
+    @* <nav aria-label="Pagination"> *@
+    @*     <ul class="pagination justify-content-center m-2" id="noteViewPagination"> *@
+    @*     </ul> *@
+    @* </nav> *@
+    @* @{ *@
+    @*     var prevDisabled = !Model.HasPreviousPage ? "disabled" : ""; *@
+    @*     var nextDisabled = !Model.HasNextPage ? "disabled" : ""; *@
+    @* } *@
+    
+    @* <a asp-action="Index" *@
+    @*    asp-route-sortOrder="@ViewData["CurrentSort"]" *@
+    @*    asp-route-pageNumber="@(Model.PageIndex - 1)" *@
+    @*    asp-route-currentFilter="@ViewData["CurrentFilter"]" *@
+    @*    class="btn btn-default @prevDisabled"> *@
+    @*     Previous *@
+    @* </a> *@
+    @* <a asp-action="Index" *@
+    @*    asp-route-sortOrder="@ViewData["CurrentSort"]" *@
+    @*    asp-route-pageNumber="@(Model.PageIndex + 1)" *@
+    @*    asp-route-currentFilter="@ViewData["CurrentFilter"]" *@
+    @*    class="btn btn-default @nextDisabled"> *@
+    @*     Next *@
+    @* </a> *@
+
+    @Html.PagedListPager( (IPagedList)Model.NoteViewModels, page => Url.Action("Index", new { page }) )
+
+
     </div>
     @await Html.PartialAsync("FilteringPartial/_FilterView", Model.Tags)
 

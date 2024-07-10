@@ -9,7 +9,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NoteApp.Helpers;
 using NoteApp.Models.ViewModels.Notes;
-
+using NoteApp.Views.Shared;
+using X.PagedList;
 
 namespace NoteApp.Controllers
 {
@@ -35,62 +36,20 @@ namespace NoteApp.Controllers
         }
 
         // GET: Note
-        public async Task<IActionResult> Index(string sortOrder)
+        public async Task<IActionResult> Index(string sortOrder, int? page)
         {
-            
-            ViewBag.TitleSortParm = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
-            ViewData["CreateDateSortParm"] = sortOrder == "CreateDate" ? "create_date_desc" : "CreateDate";
-            ViewData["UpdatedDateSortParm"] = sortOrder == "UpdateDate" ? "update_date_desc" : "UpdateDate";
-            ViewData["TagSortParm"] = sortOrder == "Tag" ? "tag_desc" : "Tag";
-            // ViewData["GroupSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
-            
+            var pageNumber = page ?? 1;
             var userId = _userManager.GetUserId(User);
             var user = await _userManager.FindByIdAsync(userId);
+            
+            var noteTagViewModels = new NoteTagViewModel
+            {
+                NoteViewModels = GetNoteViewModels("", "", []).ToPagedList(pageNumber, 5),
+                Tags = GetUserOwnedTags(userId)
+            };
             var roles = await _userManager.GetRolesAsync(user);
             
-            var notes = from n in _context.Notes.Where(note => note.IsOwnedBy == userId)
-                select n;
-            switch (sortOrder)
-            {
-                case "title_desc":
-                    notes = notes.OrderByDescending(n => n.Title);
-                    break;
-                case "CreateDate":
-                    notes = notes.OrderBy(n => n.CreatedAt);
-                    break;
-                case "create_date_desc":
-                    notes = notes.OrderByDescending(n => n.CreatedAt);
-                    break;
-                case "UpdateDate":
-                    notes = notes.OrderBy(n => n.CreatedAt);
-                    break;
-                case "update_date_desc":
-                    notes = notes.OrderByDescending(n => n.CreatedAt);
-                    break;
-                case "Tag":
-                    notes = notes.OrderBy(n => n.NoteTags.OrderBy(nt => nt.Tag.Name));
-                    break;
-                case "tag_desc":
-                    notes = notes.OrderByDescending(n => n.NoteTags.OrderByDescending(nt => nt.Tag.Name));
-                    break;
-                default:
-                    notes = notes.OrderBy(s => s.Title);
-                    break;
-            }
-            
-
-            
-            // var notes = await _context.Notes
-            //     .Where(note => note.IsOwnedBy == userId)
-            //     .ToListAsync();
-                
-            var model = new NoteIndexViewModel
-            {
-                Notes = await notes.ToListAsync(),
-                Roles = roles
-            };
-            
-            return View(model);
+            return View("Index", noteTagViewModels);
         }
 
         // GET: Note/Details/5
@@ -415,9 +374,48 @@ namespace NoteApp.Controllers
             TempData["SuccessMessage"] = $"Notes were deleted.";           
             return RedirectToAction("Index");
         }
-        private IEnumerable<NoteViewModel> GetNoteViewModels(string userId, string category, int currentPage, List<Guid> selectedTags)
+        private IEnumerable<NoteViewModel> GetNoteViewModels(string category, string sortOrder, List<Guid> selectedTags)
         {
 
+            
+            ViewBag.TitleSortParm = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewData["CreateDateSortParm"] = sortOrder == "CreateDate" ? "create_date_desc" : "CreateDate";
+            ViewData["UpdatedDateSortParm"] = sortOrder == "UpdateDate" ? "update_date_desc" : "UpdateDate";
+            ViewData["TagSortParm"] = sortOrder == "Tag" ? "tag_desc" : "Tag";
+            // ViewData["GroupSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            
+            var userId = _userManager.GetUserId(User);
+            
+            var notes = from n in _context.Notes.Where(note => note.IsOwnedBy == userId)
+                select n;
+            switch (sortOrder)
+            {
+                case "title_desc":
+                    notes = notes.OrderByDescending(n => n.Title);
+                    break;
+                case "CreateDate":
+                    notes = notes.OrderBy(n => n.CreatedAt);
+                    break;
+                case "create_date_desc":
+                    notes = notes.OrderByDescending(n => n.CreatedAt);
+                    break;
+                case "UpdateDate":
+                    notes = notes.OrderBy(n => n.CreatedAt);
+                    break;
+                case "update_date_desc":
+                    notes = notes.OrderByDescending(n => n.CreatedAt);
+                    break;
+                case "Tag":
+                    notes = notes.OrderBy(n => n.NoteTags.OrderBy(nt => nt.Tag.Name));
+                    break;
+                case "tag_desc":
+                    notes = notes.OrderByDescending(n => n.NoteTags.OrderByDescending(nt => nt.Tag.Name));
+                    break;
+                default:
+                    notes = notes.OrderBy(s => s.Title);
+                    break;
+            }
+            
             // Get notes from DB
             var tableNotesQuery = _context.Notes
                 .Include(note => note.Category)
@@ -436,11 +434,14 @@ namespace NoteApp.Controllers
                 tableNotesQuery = tableNotesQuery.Where(note => note.NoteTags.Any(nt => selectedTags.Contains(nt.TagId)));
             }
             
-            // Pagination
-            var tableNotes = tableNotesQuery
-                .Skip((CurrentPage - 1) * ItemsPerPage)
-                .Take(ItemsPerPage)
-                .ToList();
+            // jQuery Pagination
+            // var tableNotes = tableNotesQuery
+            //     .Skip((CurrentPage - 1) * ItemsPerPage)
+            //     .Take(ItemsPerPage)
+            //     .ToList();
+            
+            // C# Pagination
+            var tableNotes = tableNotesQuery.ToList();
             
             // Map the notes to NoteViewModels
             var noteViewModels = tableNotes.Select(note =>
@@ -472,43 +473,43 @@ namespace NoteApp.Controllers
             return tags;
         }
 
-        public async Task<IActionResult> GetNotes(string view, string category, int currentPage, List<Guid> filterTags)
-        {
-            var userId = _userManager.GetUserId(User);
-            
-            if (view == "Table")
-            {
-                CurrentPage = currentPage > 0 ? currentPage : 1;
-                SelectedCategory = category;
-                SelectedTags = filterTags;
-                
-                var totalNotesForUser = await _context.Notes
-                    .Where(note => note.IsOwnedBy == userId)
-                    .Where(note => note.Category.Name == SelectedCategory)
-                    .CountAsync();
-
-                TotalPages = (int)Math.Ceiling(totalNotesForUser / (double)ItemsPerPage);
-
-                ViewBag.CurrentPage = CurrentPage;
-                ViewBag.TotalPages = TotalPages;
-                ViewBag.Categories = await _context.Categories.ToListAsync();
-     
-                var noteTagViewModels = new NoteTagViewModel
-                {
-                    NoteViewModels = GetNoteViewModels(userId, category, currentPage, filterTags),
-                    Tags = GetUserOwnedTags(userId)
-                };
-
-                return PartialView("_TableView", noteTagViewModels);
-            }
-
-            
-            var cardNotes = _context.Notes
-                .Where(note => note.IsOwnedBy == userId)
-                .ToList();
-
-            return PartialView("_CardView", cardNotes);
-        }
+        // public async Task<IActionResult> GetNotes(string view, string category, int currentPage, List<Guid> filterTags)
+        // {
+        //     var userId = _userManager.GetUserId(User);
+        //     
+        //     if (view == "Table")
+        //     {
+        //         CurrentPage = currentPage > 0 ? currentPage : 1;
+        //         SelectedCategory = category;
+        //         SelectedTags = filterTags;
+        //         
+        //         var totalNotesForUser = await _context.Notes
+        //             .Where(note => note.IsOwnedBy == userId)
+        //             .Where(note => note.Category.Name == SelectedCategory)
+        //             .CountAsync();
+        //
+        //         TotalPages = (int)Math.Ceiling(totalNotesForUser / (double)ItemsPerPage);
+        //
+        //         ViewBag.CurrentPage = CurrentPage;
+        //         ViewBag.TotalPages = TotalPages;
+        //         ViewBag.Categories = await _context.Categories.ToListAsync();
+        //
+        //         var noteTagViewModels = new NoteTagViewModel
+        //         {
+        //             NoteViewModels = GetNoteViewModels(userId, category, currentPage, filterTags),
+        //             Tags = GetUserOwnedTags(userId)
+        //         };
+        //
+        //         return PartialView("_TableView", noteTagViewModels);
+        //     }
+        //
+        //     
+        //     var cardNotes = _context.Notes
+        //         .Where(note => note.IsOwnedBy == userId)
+        //         .ToList();
+        //
+        //     return PartialView("_CardView", cardNotes);
+        // }
 
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateTestNotes()

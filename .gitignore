@@ -7,3 +7,5 @@ appsettings.json
 /node_modules/
 TODO
 /wwwroot/js/
+appsettings.json
+appsettings.Development.json

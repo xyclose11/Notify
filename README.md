@@ -5,8 +5,11 @@ With this app you can do the following:
 - Take notes
 - Download notes
 - **Create** & **Manage** an account
-- Group notes
+- Categorize notes
 - Tag notes
+- Search through notes (server side)
+- Sort notes (server side)
+- Share notes
 
 The motivation behind this project is to learn C#, along with the .NET framework.
 
@@ -15,4 +18,6 @@ The motivation behind this project is to learn C#, along with the .NET framework
 - ASP.NET MVC
 - JQuery
 - Bootstrap
+- TypeScript
+- Webpack
 ##### Created by: Harris Gustafson, June 2024
